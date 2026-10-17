@@ -1,46 +1,63 @@
+import { Fragment, type CSSProperties } from "react";
 import { Screen } from "../components/Screen";
 import { useGame } from "../state/GameContext";
+import { getRoundLabel } from "../game/tournament";
 
 export function PlayPage() {
-  const { candidates, selectWinner } = useGame();
-
+  const {
+    candidates,
+    selectWinner,
+    roundSize,
+    matchNumber,
+    totalMatches,
+    progress,
+    isPicking,
+    pendingPick,
+  } = useGame();
+  const matchKey = `${roundSize}-${matchNumber}-${candidates[0].id}`;
   return (
     <Screen id="play">
-      <div>
+      <div aria-live="polite" aria-atomic="true">
         <strong>
-          16강 <span>5/8</span>
+          {getRoundLabel(roundSize)}{" "}
+          <span>
+            {matchNumber}/{totalMatches}
+          </span>
         </strong>
       </div>
-      <div className="progress"></div>
-
-      <div className="matches">
-        <button className="card idol" onClick={() => selectWinner(0)}>
-          <div className="photo portrait">
-            <img
-              data-portrait="0"
-              src={candidates[0].image}
-              alt={candidates[0].name}
-            />
-          </div>
-          <span className="card-label">
-            {candidates[0].name}
-            <small>{candidates[0].group}</small>
-          </span>
-        </button>
-        <span className="vs">VS</span>
-        <button className="card idol" onClick={() => selectWinner(1)}>
-          <div className="photo portrait">
-            <img
-              data-portrait="1"
-              src={candidates[1].image}
-              alt={candidates[1].name}
-            />
-          </div>
-          <span className="card-label">
-            {candidates[1].name}
-            <small>{candidates[1].group}</small>
-          </span>
-        </button>
+      <div
+        className="progress"
+        role="progressbar"
+        aria-label="현재 라운드 진행률"
+        aria-valuemin={0}
+        aria-valuemax={totalMatches}
+        aria-valuenow={matchNumber - 1 + (pendingPick !== null ? 1 : 0)}
+        style={{ "--match-progress": `${progress}%` } as CSSProperties}
+      />
+      <div className="matches" key={matchKey}>
+        {candidates.map((candidate, index) => (
+          <Fragment key={candidate.id}>
+            {index === 1 && <span className="vs">VS</span>}
+            <button
+              className={`card idol${pendingPick === index ? " picked" : ""}`}
+              disabled={isPicking}
+              onClick={() => selectWinner(index)}
+              aria-label={`${candidate.name} 선택`}
+            >
+              <div className="photo portrait">
+                <img
+                  data-portrait={index}
+                  src={candidate.image}
+                  alt={candidate.name}
+                />
+              </div>
+              <span className="card-label">
+                {candidate.name}
+                <small>{candidate.group}</small>
+              </span>
+            </button>
+          </Fragment>
+        ))}
       </div>
     </Screen>
   );
