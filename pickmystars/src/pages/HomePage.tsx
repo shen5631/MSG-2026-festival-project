@@ -3,7 +3,7 @@ import { useGame } from "../state/GameContext";
 import { asset } from "../data/idols";
 
 export function HomePage() {
-  const { selectedCategory, round, setRound, selectCategory, navigate } =
+  const { selectedCategory, round, setRound, selectCategory, startGame } =
     useGame();
 
   return (
@@ -48,29 +48,24 @@ export function HomePage() {
       </div>
       <div className="controls">
         <div className="rounds">
-          <button
-            className={round === 8 ? "on" : ""}
-            onClick={() => setRound(8)}
-          >
-            8강
-          </button>
-          <button
-            className={round === 16 ? "on" : ""}
-            onClick={() => setRound(16)}
-          >
-            16강
-          </button>
-          <button
-            className={round === 32 ? "on" : ""}
-            onClick={() => setRound(32)}
-          >
-            32강
-          </button>
+          {([16, 32, 64] as const).map((size) => (
+            <button
+              key={size}
+              className={round === size ? "on" : ""}
+              aria-pressed={round === size}
+              onClick={() => setRound(size)}
+            >
+              {size}강
+            </button>
+          ))}
         </div>
-        <button className="primary wide" onClick={() => navigate("play")}>
+        <button className="primary wide" onClick={startGame}>
           월드컵 시작하기
         </button>
       </div>
+      <p className="demo-notice">
+        기능 테스트용 · 임시 후보는 예시 사진을 재사용합니다.
+      </p>
     </Screen>
   );
 }
