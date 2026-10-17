@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Screen } from "../components/Screen";
 import { useGame } from "../state/GameContext";
 import { usePhotobooth } from "../hooks/usePhotobooth";
@@ -20,6 +20,67 @@ export function PhotoPage() {
   useEffect(() => {
     if (active) setFrame(category === "boy" ? "#b6cdf4" : "#f4bbd5");
   }, [active, category]);
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [sending, setSending] = useState(false);
+  const [mailError, setMailError] = useState("");
+  const [sent, setSent] = useState(false);
+  const sendLock = useRef(false);
+  const session = useRef(0);
+  const request = useRef<AbortController | null>(null);
+  useEffect(() => {
+    session.current++;
+    request.current?.abort();
+    sendLock.current = false;
+    setEmailOpen(false);
+    setEmail("");
+    setMailError("");
+    setSent(false);
+    setSending(false);
+    return () => {
+      session.current++;
+      request.current?.abort();
+    };
+  }, [active, winner.id]);
+  const sendEmail = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (sendLock.current || sent) return;
+    sendLock.current = true;
+    const version = session.current;
+    const controller = new AbortController();
+    request.current = controller;
+    setSending(true);
+    setMailError("");
+    try {
+      const photo = await booth.makeEmailPhoto(frame);
+      if (version !== session.current) return;
+      const response = await fetch("/api/photo-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), photo }),
+        signal: controller.signal,
+      });
+      const result = await response.json().catch(() => null);
+      if (version !== session.current) return;
+      if (!response.ok)
+        throw new Error(
+          result?.message ||
+            "메일을 전송하지 못했어요. 잠시 후 다시 시도해주세요.",
+        );
+      setSent(true);
+      setEmail("");
+    } catch (error) {
+      if (version === session.current && !controller.signal.aborted)
+        setMailError(
+          error instanceof Error ? error.message : "전송에 실패했어요.",
+        );
+    } finally {
+      if (version === session.current) {
+        sendLock.current = false;
+        setSending(false);
+      }
+    }
+  };
   const complete = booth.shots.length === 4 && !booth.shooting;
   const ready = booth.status === "ready";
   const primaryLabel =
@@ -80,7 +141,7 @@ export function PhotoPage() {
               </div>
             )}
             <span className="camera-badge">
-              {complete ? "촬영 완료! 사진을 저장해주세요" : "함께 남기는 네컷"}
+              {complete ? "촬영 완료! 이메일로 받아보세요" : "함께 남기는 네컷"}
             </span>
           </div>
           <p className="shot-count" aria-live="polite">
@@ -103,8 +164,8 @@ export function PhotoPage() {
           <p className="camera-status" role={booth.error ? "alert" : "status"}>
             {booth.error ||
               (complete
-                ? "네 장을 모두 찍었어요. 프레임을 고른 뒤 저장해주세요."
-                : "사진은 이 기기에서만 처리돼요. 촬영 화면을 나가면 카메라가 꺼집니다.")}
+                ? "네 장을 모두 찍었어요. 프레임을 고른 뒤 이메일로 받아보세요."
+                : "촬영 화면을 나가면 카메라가 꺼집니다. 이메일 전송 시 완성 사진을 전송합니다.")}
           </p>
         </div>
         <div className="booth-settings">
@@ -127,7 +188,7 @@ export function PhotoPage() {
                   style={{ background: option.color }}
                   aria-label={`${option.name} 프레임`}
                   aria-pressed={frame === option.color}
-                  disabled={booth.shooting || booth.saving}
+                  disabled={booth.shooting || emailOpen}
                   onClick={() => setFrame(option.color)}
                 >
                   {frame === option.color ? "✓" : ""}
@@ -179,21 +240,75 @@ export function PhotoPage() {
           <div className="booth-actions">
             <button
               className="secondary"
-              disabled={
-                booth.shots.length === 0 || booth.shooting || booth.saving
-              }
-              onClick={booth.retake}
+              disabled={booth.shots.length === 0 || booth.shooting || sending}
+              onClick={() => {
+                booth.retake();
+                setEmailOpen(false);
+                setSent(false);
+                setMailError("");
+                setEmail("");
+              }}
             >
               다시 찍기
             </button>
             <button
               className="primary"
-              disabled={!complete || booth.saving}
-              onClick={() => booth.savePhotos(frame)}
+              disabled={!complete || sending || sent}
+              onClick={() => {
+                setEmailOpen(true);
+                setMailError("");
+              }}
             >
-              {booth.saving ? "저장 중…" : "사진 저장하기"}
+              {sent ? "전송 요청 완료" : "이메일로 전송하기"}
             </button>
           </div>
+          {emailOpen && (
+            <form className="email-form" onSubmit={sendEmail}>
+              {sent ? (
+                <p role="status">
+                  메일 전송 요청이 접수됐어요! 받은편지함과 스팸함을
+                  확인해주세요.
+                </p>
+              ) : (
+                <>
+                  <label htmlFor="photo-email">사진을 받을 이메일 주소</label>
+                  <input
+                    id="photo-email"
+                    type="email"
+                    required
+                    maxLength={254}
+                    autoComplete="off"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    placeholder="example@email.com"
+                    value={email}
+                    disabled={sending}
+                    onChange={(event) => setEmail(event.target.value)}
+                  />
+                  <p>
+                    입력한 주소로 완성 사진을 보내요. 전송을 위해 이메일 주소와
+                    사진이 메일 서비스에 전달됩니다.
+                  </p>
+                  {mailError && <p role="alert">{mailError}</p>}
+                  <button className="primary" type="submit" disabled={sending}>
+                    {sending ? "전송 중…" : "이 주소로 전송하기"}
+                  </button>
+                  <button
+                    className="secondary"
+                    type="button"
+                    disabled={sending}
+                    onClick={() => {
+                      setEmailOpen(false);
+                      setEmail("");
+                      setMailError("");
+                    }}
+                  >
+                    취소
+                  </button>
+                </>
+              )}
+            </form>
+          )}
         </div>
       </div>
     </Screen>

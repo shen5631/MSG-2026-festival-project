@@ -1771,3 +1771,48 @@ button,
 #photo .camera-status { font-size: 12px; line-height: 1.6; min-height: 36px; margin: 16px 0 0; color: var(--booth-ink); }
 #photo .camera-status[role="alert"] { color: #9d2448; }
 @media (max-width: 450px) { #photo .swatches .frame-swatch { width: 26px; height: 26px; } }
+
+.email-form {
+  grid-column: 1 / -1;
+  justify-self: stretch;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin-top: 16px;
+  padding: 18px;
+  border: 1.5px solid var(--accent);
+  border-radius: 18px;
+  background: #ffffff;
+}
+.email-form label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.email-form input {
+  background: #ffffff;
+  color: #222222;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--booth-line);
+  border-radius: 10px;
+  font: inherit;
+}
+.email-form p {
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.email-form button {
+  margin: 4px;
+}
+.email-form [role="alert"] {
+  color: #a51d46;
+}
+
+.email-form > [role="status"] {
+  text-align: center;
+  margin: 12px 0;
+}
