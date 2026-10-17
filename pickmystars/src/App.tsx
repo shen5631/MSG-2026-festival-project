@@ -26,6 +26,7 @@ import { HomePage } from "./pages/HomePage";
 import { PlayPage } from "./pages/PlayPage";
 import { ResultPage } from "./pages/ResultPage";
 import { PhotoPage } from "./pages/PhotoPage";
+import { recordWinner } from "./lib/winners";
 
 export default function App() {
   const [category, setCategory] = useState<Category>("girl");
@@ -154,6 +155,7 @@ export default function App() {
         setGame(next);
         setPendingPick(null);
         if (next.winner) {
+          recordWinner(next.winner);
           navigate("result");
           return;
         }
