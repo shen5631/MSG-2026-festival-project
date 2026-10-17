@@ -1,10 +1,6 @@
 # MSG-2026-festival-project
 2026&lt;MSG> 관악구 (청아즐 페스티벌) 부스 운영 게임 이상형월드컵
 
-# P!ck My St☆r · React UI
-
-기존 HTML의 화면 구성, CSS, 이미지와 예시 동작을 유지한 React + TypeScript + Vite 프로젝트입니다.
-
 ## 실행
 
 Node.js 22.12 이상을 설치한 뒤 이 폴더에서 실행합니다.
