@@ -35,7 +35,7 @@ export function usePhotobooth(
   const [shots, setShots] = useState<string[]>([]);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [shooting, setShooting] = useState(false);
-  const [saving, setSaving] = useState(false);
+
   const [seconds, setSeconds] = useState(3);
 
   const stop = useCallback(() => {
@@ -58,7 +58,6 @@ export function usePhotobooth(
     setShots([]);
     setCountdown(null);
     setShooting(false);
-    setSaving(false);
     return stop;
   }, [active, idolImage, stop]);
 
@@ -160,25 +159,20 @@ export function usePhotobooth(
     setCountdown(null);
   };
 
-  const savePhotos = async (color: string) => {
-    if (saving || shots.length !== 4) return;
-    const version = requestVersion.current;
-    setSaving(true);
-    setError("");
+  const makeEmailPhoto = async (color: string) => {
+    if (shots.length !== 4) throw new Error("네 장의 촬영을 완료해주세요.");
+    const blob = await createPhotoStrip(shots, color, winnerName);
+    const bitmap = await createImageBitmap(blob);
     try {
-      const blob = await createPhotoStrip(shots, color, winnerName);
-      if (version !== requestVersion.current || !activeRef.current) return;
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = `pick-my-star-${Date.now()}.png`;
-      anchor.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } catch (cause) {
-      if (version === requestVersion.current && activeRef.current)
-        setError(cameraError(cause));
+      const canvas = document.createElement("canvas");
+      canvas.width = 640;
+      canvas.height = Math.round((bitmap.height * 640) / bitmap.width);
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("사진을 준비할 수 없어요.");
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL("image/jpeg", 0.9);
     } finally {
-      if (version === requestVersion.current) setSaving(false);
+      bitmap.close();
     }
   };
 
@@ -189,12 +183,11 @@ export function usePhotobooth(
     shots,
     countdown,
     shooting,
-    saving,
     seconds,
     setSeconds,
     startCamera,
     takePhotos,
     retake,
-    savePhotos,
+    makeEmailPhoto,
   };
 }
