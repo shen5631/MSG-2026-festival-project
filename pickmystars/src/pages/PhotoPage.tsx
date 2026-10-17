@@ -1,8 +1,37 @@
+import { useEffect, useState } from "react";
 import { Screen } from "../components/Screen";
 import { useGame } from "../state/GameContext";
+import { usePhotobooth } from "../hooks/usePhotobooth";
+
+const frames = [
+  { color: "#f4bbd5", name: "핑크" },
+  { color: "#b6cdf4", name: "파랑" },
+  { color: "#ffe78f", name: "노랑" },
+  { color: "#ffffff", name: "흰색" },
+];
 
 export function PhotoPage() {
-  const { winner, navigate } = useGame();
+  const { winner, navigate, activeScreen, category } = useGame();
+  const active = activeScreen === "photo";
+  const booth = usePhotobooth(active, winner.image, winner.name);
+  const [frame, setFrame] = useState(
+    category === "boy" ? "#b6cdf4" : "#f4bbd5",
+  );
+  useEffect(() => {
+    if (active) setFrame(category === "boy" ? "#b6cdf4" : "#f4bbd5");
+  }, [active, category]);
+  const complete = booth.shots.length === 4 && !booth.shooting;
+  const ready = booth.status === "ready";
+  const primaryLabel =
+    booth.status === "requesting"
+      ? "카메라 연결 중…"
+      : !ready
+        ? "카메라 켜기"
+        : booth.shooting
+          ? "촬영 중…"
+          : complete
+            ? "네컷 촬영 완료"
+            : "네컷 촬영하기";
 
   return (
     <Screen id="photo">
@@ -18,26 +47,65 @@ export function PhotoPage() {
           <p>카메라 미리보기</p>
           <div className="camera">
             <div className="camera-person">
-              <span className="person-outline" aria-hidden="true">
-                ♧
-              </span>
-              <strong>내가 들어갈 자리</strong>
-              <small>카메라 미리보기</small>
+              <video
+                ref={booth.videoRef}
+                autoPlay
+                playsInline
+                muted
+                className={ready ? "live-camera" : "live-camera camera-hidden"}
+                aria-label="내 카메라 미리보기"
+              />
+              {!ready && (
+                <div className="camera-instructions">
+                  <span className="person-outline" aria-hidden="true">
+                    ♧
+                  </span>
+                  <strong>
+                    {booth.status === "requesting"
+                      ? "카메라 권한을 허용해주세요"
+                      : "카메라를 켜주세요"}
+                  </strong>
+                  <small>아래 ‘카메라 켜기’를 눌러 시작해요</small>
+                </div>
+              )}
             </div>
             <img
               className="booth-idol camera-idol"
               alt="함께 촬영할 최애"
               src={winner.image}
             />
-            <span className="camera-badge">함께 남기는 네컷</span>
+            {booth.countdown !== null && (
+              <div className="camera-countdown" aria-live="assertive">
+                {booth.countdown}
+              </div>
+            )}
+            <span className="camera-badge">
+              {complete ? "촬영 완료! 사진을 저장해주세요" : "함께 남기는 네컷"}
+            </span>
           </div>
-          <p className="shot-count">1 / 4</p>
+          <p className="shot-count" aria-live="polite">
+            {booth.shots.length} / 4{booth.shooting ? " · 촬영 중" : ""}
+          </p>
           <div className="shot-thumbnails">
-            <div>1</div>
-            <div>2</div>
-            <div>3</div>
-            <div>4</div>
+            {[0, 1, 2, 3].map((index) => (
+              <div key={index}>
+                {booth.shots[index] ? (
+                  <img
+                    src={booth.shots[index]}
+                    alt={`${index + 1}번째 촬영 사진`}
+                  />
+                ) : (
+                  index + 1
+                )}
+              </div>
+            ))}
           </div>
+          <p className="camera-status" role={booth.error ? "alert" : "status"}>
+            {booth.error ||
+              (complete
+                ? "네 장을 모두 찍었어요. 프레임을 고른 뒤 저장해주세요."
+                : "사진은 이 기기에서만 처리돼요. 촬영 화면을 나가면 카메라가 꺼집니다.")}
+          </p>
         </div>
         <div className="booth-settings">
           <div className="settings-body">
@@ -52,55 +120,78 @@ export function PhotoPage() {
             </div>
             <p>프레임 색상</p>
             <div className="swatches">
-              <i style={{ background: "#f4bbd5" }}></i>
-              <i style={{ background: "#b6cdf4" }}></i>
-              <i style={{ background: "#ffe78f" }}></i>
-              <i style={{ background: "#fff" }}></i>
+              {frames.map((option) => (
+                <button
+                  key={option.color}
+                  className="frame-swatch"
+                  style={{ background: option.color }}
+                  aria-label={`${option.name} 프레임`}
+                  aria-pressed={frame === option.color}
+                  disabled={booth.shooting || booth.saving}
+                  onClick={() => setFrame(option.color)}
+                >
+                  {frame === option.color ? "✓" : ""}
+                </button>
+              ))}
             </div>
             <p>촬영 타이머</p>
             <div className="timer-preview">
-              <span>3초</span>
-              <span>5초</span>
-              <span>10초</span>
+              {[3, 5, 10].map((seconds) => (
+                <button
+                  key={seconds}
+                  aria-pressed={booth.seconds === seconds}
+                  disabled={booth.shooting}
+                  onClick={() => booth.setSeconds(seconds)}
+                >
+                  {seconds}초
+                </button>
+              ))}
             </div>
-            <button className="primary wide" disabled>
-              사진 찍기
-            </button>
-            <button className="secondary wide" disabled>
-              사진 업로드
+            <button
+              className="primary wide"
+              disabled={
+                booth.status === "requesting" ||
+                booth.shooting ||
+                (ready && complete)
+              }
+              onClick={ready ? booth.takePhotos : booth.startCamera}
+            >
+              {primaryLabel}
             </button>
           </div>
           <div className="strip-preview">
             <p>완성 미리보기</p>
-            <div className="photo-strip">
-              <img
-                className="booth-idol"
-                alt="선택한 최애"
-                src={winner.image}
-              />
-              <img
-                className="booth-idol"
-                alt="선택한 최애"
-                src={winner.image}
-              />
-              <img
-                className="booth-idol"
-                alt="선택한 최애"
-                src={winner.image}
-              />
-              <img
-                className="booth-idol"
-                alt="선택한 최애"
-                src={winner.image}
-              />
+            <div className="photo-strip" style={{ background: frame }}>
+              {[0, 1, 2, 3].map((index) => (
+                <img
+                  key={index}
+                  className="booth-idol"
+                  alt={
+                    booth.shots[index]
+                      ? `${index + 1}번째 완성 사진`
+                      : `${index + 1}번째 촬영 대기`
+                  }
+                  src={booth.shots[index] || winner.image}
+                />
+              ))}
             </div>
           </div>
           <div className="booth-actions">
-            <button className="secondary" disabled>
+            <button
+              className="secondary"
+              disabled={
+                booth.shots.length === 0 || booth.shooting || booth.saving
+              }
+              onClick={booth.retake}
+            >
               다시 찍기
             </button>
-            <button className="primary" disabled>
-              사진 저장하기
+            <button
+              className="primary"
+              disabled={!complete || booth.saving}
+              onClick={() => booth.savePhotos(frame)}
+            >
+              {booth.saving ? "저장 중…" : "사진 저장하기"}
             </button>
           </div>
         </div>
