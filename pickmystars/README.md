@@ -22,7 +22,7 @@ npm run build
 npm run preview
 ```
 
-- `npm test`: 월드컵 진행·입력 검증, 촬영 순서·취소·크롭 및 이메일 API 관련 자동 테스트 17개
+- `npm test`: 월드컵 진행·입력 검증, 촬영 순서·취소·크롭 및 이메일 API 관련 자동 테스트 23개
 - `npm run typecheck`: TypeScript 검사
 - `npm run build`: 타입 검사 후 `dist/`에 배포용 파일 생성
 - `npm run preview`: 빌드 결과를 로컬에서 확인. 주소는 터미널 출력 참고
@@ -39,7 +39,7 @@ npm run preview
 - 남돌: 64명 대표 사진 연결 완료
 - 여돌: 64명 대표 사진 연결 완료. 사진별 출처와 유형은 [사진 출처 목록](docs/GIRL_PHOTO_SOURCES.md) 참고
 - `boy-1`, `girl-1` 등의 ID는 명단 순서로 생성되며 DB 통계의 키로도 사용됩니다. 기존 통계가 있다면 명단 순서를 임의로 바꾸지 않습니다.
-- `getTournamentRoster`는 명단이 64명보다 적을 때 임시 후보를 채웁니다. 현재는 각 64명이므로 임시 후보가 생성되지 않습니다. 메인의 임시 후보 안내 문구는 이전 테스트용 문구가 남아 있습니다.
+- `getTournamentRoster`는 명단이 64명보다 적을 때 임시 후보를 채웁니다. 현재는 각 64명이므로 임시 후보가 생성되지 않습니다.
 
 현재 결과·포토부스에서는 대표 사진인 `image`를 사용합니다. 데이터에 별도 `photo` 경로도 있으나 현재 화면에서는 사용하지 않습니다.
 
@@ -143,3 +143,45 @@ API는 서버 파일이나 Firebase에 주소·사진을 저장하지 않습니�
 불특정 다수에게 공개할 때는 공유 저장소 기반 요청 제한과 봇 방지 등을 추가해야 합니다. 현재 제한은 여러 서버 인스턴스에 공유되지 않습니다.
 
 자동 테스트는 외부 발송 없이 서비스 응답을 대체해 검증합니다. 실제 메일 발송·수신은 운영 설정 후 별도 확인이 필요합니다.
+
+## Netlify 배포 (GitHub 연결 없이)
+
+`pickmystars` 폴더에서 진행합니다. `netlify.toml`이 화면 빌드와 Functions 번들링을 설정하고,
+`netlify/functions/photo-email.mjs`가 기존 `/api/photo-email` 주소를 처리합니다.
+기존 로컬 개발 및 Vercel API도 계속 사용할 수 있습니다.
+
+```sh
+npx netlify-cli login
+npx netlify-cli deploy
+```
+
+처음에는 새 Netlify 사이트를 생성하거나, 이미 Drop으로 올린 사이트가 있으면 그 사이트에 연결합니다.
+GitHub 저장소 생성·연결은 필요하지 않습니다. 기본 배포는 확인용 주소를 만듭니다.
+
+Netlify 사이트의 **Project configuration → Environment variables**에
+`RESEND_API_KEY`, `PHOTO_EMAIL_FROM`을 등록합니다. 범위를 선택할 수 있다면 **Functions**를 포함하고,
+실제 사용할 배포 환경에도 적용합니다. 로컬 `.env`만 작성해 두어도 배포 서버에 자동 등록되지는 않습니다.
+Firebase를 사용한다면 `VITE_FIREBASE_…` 값도 빌드 환경에 등록합니다.
+키는 소스 코드나 GitHub에 올리지 않습니다. 환경 변수 변경 후 다시 배포합니다.
+
+```sh
+npx netlify-cli deploy --prod
+```
+
+이 명령은 앱을 빌드하고 정적 파일과 이메일 함수를 함께 업로드합니다.
+`dist` 폴더만 Netlify Drop에 끌어다 올리면 서버 함수는 배포되지 않으므로 이메일 전송은 작동하지 않습니다.
+실제 발송에는 Resend 발신 주소 설정이 필요하며, 테스트 발신 주소는 본인 계정 이메일 수신 확인용입니다.
+배포 주소에서 카메라 촬영 → 이메일 전송 → 수신 확인을 진행합니다.
+
+참고: [Netlify CLI 배포](https://cli.netlify.com/commands/deploy/),
+[Functions API](https://docs.netlify.com/build/functions/api/).
+
+## 방명록
+
+메인의 ‘방명록 보기’ 또는 포토부스의 ‘한마디 남기기’로 이동합니다.
+닉네임은 선택이며 비워두면 ‘익명’으로 표시됩니다. 닉네임 20자, 내용 150자까지 입력할 수 있습니다.
+최종 우승자가 있는 경우 작성한 글에 해당 아이돌 이름을 함께 표시합니다.
+최신순으로 4개씩 조회하고 페이지를 이동할 수 있습니다.
+현재 저장소는 해당 사이트의 브라우저 localStorage입니다. 새로고침 후에도 유지되지만
+다른 기기·브라우저·다른 도메인과 공유되지 않고 사이트 데이터 삭제 시 사라집니다.
+Firebase 방명록 공유 및 운영자 삭제는 아직 구현하지 않았습니다.

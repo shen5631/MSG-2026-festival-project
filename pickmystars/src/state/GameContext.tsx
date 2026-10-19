@@ -4,6 +4,7 @@ import type { Category, Idol, ScreenId } from "../data/idols";
 import type { StartSize } from "../game/tournament";
 
 export interface GameContextValue {
+  guestbookWinner?: Idol | null;
   category: Category;
   selectedCategory: Category | null;
   round: StartSize;
