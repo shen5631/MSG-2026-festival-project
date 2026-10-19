@@ -37,3 +37,9 @@ npm run dev
 - 순위 통계 화면 구현
 - Resend 발신 도메인·API 키 설정 후 실제 메일 수신 확인
 - 전시용 컴퓨터에서 카메라 권한·화각·반복 사용 점검
+
+## Netlify 배포
+
+GitHub 연결 없이 `pickmystars` 폴더에서 Netlify CLI로 화면과 이메일 API를 함께 배포할 수 있습니다.
+환경 변수 등록 및 배포 순서는 [앱 개발 안내](pickmystars/README.md#netlify-배포-github-연결-없이)를 참고하세요.
+`dist` 폴더만 Drop으로 업로드하면 이메일 API는 배포되지 않습니다.

@@ -26,6 +26,7 @@ import { HomePage } from "./pages/HomePage";
 import { PlayPage } from "./pages/PlayPage";
 import { ResultPage } from "./pages/ResultPage";
 import { PhotoPage } from "./pages/PhotoPage";
+import { GuestbookPage } from "./pages/GuestbookPage";
 import { recordWinner } from "./lib/winners";
 
 export default function App() {
@@ -169,11 +170,15 @@ export default function App() {
     );
   };
 
-  const theme =
-    activeScreen === "home" ? "yellow" : category === "boy" ? "blue" : "pink";
+  const theme = ["home", "guestbook"].includes(activeScreen)
+    ? "yellow"
+    : category === "boy"
+      ? "blue"
+      : "pink";
   return (
     <GameContext.Provider
       value={{
+        guestbookWinner: game?.winner ?? null,
         category,
         selectedCategory,
         round,
@@ -206,6 +211,7 @@ export default function App() {
           <PlayPage />
           <ResultPage />
           <PhotoPage />
+          <GuestbookPage />
         </div>
       </main>
     </GameContext.Provider>

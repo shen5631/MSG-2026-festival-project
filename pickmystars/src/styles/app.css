@@ -1816,3 +1816,51 @@ button,
   text-align: center;
   margin: 12px 0;
 }
+
+/* 방명록: 기존 화면은 유지하고 이 화면 안에서만 스타일을 적용합니다. */
+#guestbook { padding: 58px 4.5vw 48px; color: #650b2c; text-align: left; position: relative; }
+.guestbook-back { position: absolute; right: 4.5vw; top: 25px; border: 0; background: transparent; color: #802044; font-size: 14px; }
+.guestbook-back span { margin-left: 10px; }
+.guestbook-title { text-align: center; margin-bottom: 30px; }
+.guestbook-title h1 { font-size: clamp(36px, 4vw, 58px); margin: 0 0 10px; letter-spacing: -2px; }
+.guestbook-title p { margin: 0; font-size: 18px; color: #9e4e68; }
+.guestbook-layout { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(0, 2fr); gap: 12px; max-width: 1400px; margin: auto; align-items: stretch; }
+.guestbook-panel { border: 2px solid #ffb600; border-radius: 20px; background: #ffffffed; padding: clamp(22px, 2.4vw, 36px); min-width: 0; }
+.guestbook-panel h2 { font-size: clamp(23px, 2.5vw, 32px); margin: 0 0 20px; letter-spacing: -1px; }
+.guestbook-tag { display: inline-block; color: #ba487a; background: #ffedf5; border-radius: 24px; padding: 8px 14px; font-size: 14px; max-width: 100%; overflow-wrap: anywhere; }
+.guestbook-form label { display: block; font-weight: 700; font-size: 16px; margin: 24px 0 11px; }
+.guestbook-form label small { font-size: inherit; font-weight: 400; }
+.guestbook-form input, .guestbook-form textarea { width: 100%; color: #65102e; background: #fff; border: 1px solid #d9bbca; border-radius: 10px; padding: 14px; font: inherit; font-size: 14px; }
+.guestbook-form input::placeholder, .guestbook-form textarea::placeholder { color: #ac94a1; }
+.guestbook-form input:focus-visible, .guestbook-form textarea:focus-visible { outline: 2px solid #c96697; outline-offset: 3px; }
+.guestbook-textarea { position: relative; }
+.guestbook-form textarea { display: block; min-height: 165px; padding-bottom: 40px; resize: vertical; line-height: 1.7; }
+.guestbook-textarea > span { position: absolute; bottom: 14px; right: 15px; color: #ad879a; font-size: 13px; }
+.guestbook-submit { width: 100%; background: #d96796; border: 0; border-radius: 12px; color: white; padding: 16px; margin-top: 24px; font-size: 18px; font-weight: 700; }
+.guestbook-submit:disabled { opacity: .5; cursor: default; }
+.guestbook-help { color: #ad879a; text-align: center; font-size: 12px; line-height: 1.6; margin: 14px 0 0; }
+.guestbook-feedback { font-size: 14px; line-height: 1.6; color: #9d2754; }
+.guestbook-list { display: flex; flex-direction: column; }
+.guestbook-list-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+.guestbook-list-heading h2 { margin: 0; }
+.guestbook-list-heading > span { color: #a46680; font-size: 14px; }
+.guestbook-list-heading > small { margin-left: auto; font-size: 14px; }
+.guestbook-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; flex: 1; align-content: start; }
+.guestbook-entry { border: 1px solid #f3b4d0; border-radius: 13px; padding: 22px; min-height: 205px; background: #fff; position: relative; display: flex; flex-direction: column; }
+.guestbook-entry .guestbook-tag { align-self: start; margin-right: 22px; font-size: 12px; padding: 7px 12px; }
+.guestbook-star { position: absolute; right: 18px; top: 18px; color: #ffe180; font-size: 25px; }
+.guestbook-entry h3 { font-size: 16px; margin: 20px 0 10px; overflow-wrap: anywhere; }
+.guestbook-entry > p { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; line-height: 1.7; margin: 0 0 24px; }
+.guestbook-entry time { margin-top: auto; color: #b596a5; font-size: 12px; }
+.guestbook-pagination { justify-content: center; flex-wrap: wrap; margin: 24px 0 0; gap: 4px; }
+.guestbook-pagination button { border: 0; border-radius: 8px; background: transparent; color: #7d284a; min-width: 36px; min-height: 36px; padding: 6px; }
+.guestbook-pagination button[aria-current="page"] { background: #d96796; color: white; }
+.guestbook-pagination button:disabled { opacity: .35; cursor: default; }
+.guestbook-empty { min-height: 350px; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #9d6c83; line-height: 1.8; padding: 24px; }
+.guestbook-empty > span { font-size: 44px; color: #edca65; margin-bottom: 15px; }
+.guestbook-empty p { font-size: 14px; }
+.guestbook-storage-note { text-align: center; color: #b499a6; font-size: 11px; margin: 20px 0 0; }
+.guestbook-home-link, .guestbook-photo-link { border: 0; background: transparent; color: #985173; padding: 12px 20px; font-size: 14px; margin-top: 12px; }
+#photo .guestbook-photo-link { display: block; margin: 18px auto 0; }
+@media (max-width: 800px) { .guestbook-layout { grid-template-columns: 1fr; } #guestbook { padding: 70px 20px 30px; } .guestbook-panel { padding: 24px; } .guestbook-empty { min-height: 230px; } }
+@media (max-width: 480px) { .guestbook-cards { grid-template-columns: 1fr; } .guestbook-list-heading h2 { font-size: 23px; } }

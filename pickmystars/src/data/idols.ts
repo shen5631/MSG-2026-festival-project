@@ -1,5 +1,5 @@
 export type Category = "boy" | "girl";
-export type ScreenId = "home" | "play" | "result" | "photo";
+export type ScreenId = "home" | "play" | "result" | "photo" | "guestbook";
 
 export interface Idol {
   id: string;

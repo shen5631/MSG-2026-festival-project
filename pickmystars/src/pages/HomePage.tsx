@@ -3,8 +3,14 @@ import { useGame } from "../state/GameContext";
 import { asset } from "../data/idols";
 
 export function HomePage() {
-  const { selectedCategory, round, setRound, selectCategory, startGame } =
-    useGame();
+  const {
+    selectedCategory,
+    round,
+    setRound,
+    selectCategory,
+    startGame,
+    navigate,
+  } = useGame();
 
   return (
     <Screen id="home">
@@ -63,9 +69,12 @@ export function HomePage() {
           월드컵 시작하기
         </button>
       </div>
-      <p className="demo-notice">
-        기능 테스트용 · 임시 후보는 예시 사진을 재사용합니다.
-      </p>
+      <button
+        className="guestbook-home-link"
+        onClick={() => navigate("guestbook")}
+      >
+        방명록 보기 <span aria-hidden="true">›</span>
+      </button>
     </Screen>
   );
 }
