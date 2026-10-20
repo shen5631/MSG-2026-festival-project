@@ -1,4 +1,3 @@
-export const GUESTBOOK_KEY = "pickmystars.guestbook.v1";
 export interface GuestbookEntry {
   id: string;
   nickname: string;
@@ -24,30 +23,21 @@ export function prepareEntry(
     createdAt: Date.now(),
   };
 }
-export function readEntries(
-  storage: Pick<Storage, "getItem">,
-): GuestbookEntry[] {
-  const raw = storage.getItem(GUESTBOOK_KEY);
-  if (!raw) return [];
-  const rows: unknown = JSON.parse(raw);
-  if (!Array.isArray(rows)) throw new Error("저장한 방명록을 읽을 수 없어요.");
-  return rows
+// Realtime Database의 guestbook 노드 값을 최신순 목록으로 바꿉니다.
+export function parseEntries(value: unknown): GuestbookEntry[] {
+  if (value === null || value === undefined) return [];
+  if (typeof value !== "object" || Array.isArray(value))
+    throw new Error("방명록 자료를 읽을 수 없어요.");
+  return Object.values(value as Record<string, unknown>)
     .filter(
       (row): row is GuestbookEntry =>
         !!row &&
-        typeof row.id === "string" &&
-        typeof row.nickname === "string" &&
-        typeof row.message === "string" &&
-        typeof row.idol === "string" &&
-        Number.isFinite(row.createdAt),
+        typeof row === "object" &&
+        typeof (row as GuestbookEntry).id === "string" &&
+        typeof (row as GuestbookEntry).nickname === "string" &&
+        typeof (row as GuestbookEntry).message === "string" &&
+        typeof (row as GuestbookEntry).idol === "string" &&
+        Number.isFinite((row as GuestbookEntry).createdAt),
     )
     .sort((a, b) => b.createdAt - a.createdAt);
-}
-export function saveEntry(
-  storage: Pick<Storage, "getItem" | "setItem">,
-  entry: GuestbookEntry,
-) {
-  const rows = [entry, ...readEntries(storage)];
-  storage.setItem(GUESTBOOK_KEY, JSON.stringify(rows));
-  return rows;
 }

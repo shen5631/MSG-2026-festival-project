@@ -22,7 +22,7 @@ npm run build
 npm run preview
 ```
 
-- `npm test`: 월드컵 진행·입력 검증, 촬영 순서·취소·크롭 및 이메일 API 관련 자동 테스트 27개
+- `npm test`: 월드컵 진행·입력 검증, 촬영 순서·취소·크롭 및 이메일 API 관련 자동 테스트 28개
 - `npm run typecheck`: TypeScript 검사
 - `npm run build`: 타입 검사 후 `dist/`에 배포용 파일 생성
 - `npm run preview`: 빌드 결과를 로컬에서 확인. 주소는 터미널 출력 참고
@@ -187,11 +187,11 @@ Gmail 계정과 앱 비밀번호 설정 후 다른 이메일 주소로 실제 �
 닉네임은 선택이며 비워두면 ‘익명’으로 표시됩니다. 닉네임 20자, 내용 150자까지 입력할 수 있습니다.
 최종 우승자가 있는 경우 작성한 글에 해당 아이돌 이름을 함께 표시합니다.
 최신순으로 4개씩 조회하고 페이지를 이동할 수 있습니다.
-현재 저장소는 해당 사이트의 브라우저 localStorage입니다. 새로고침 후에도 유지되지만
-다른 기기·브라우저·다른 도메인과 공유되지 않고 사이트 데이터 삭제 시 사라집니다.
-Firebase 방명록 공유 및 운영자 삭제는 아직 구현하지 않았습니다.
+글은 Firebase Realtime Database의 `guestbook/{id}` 에 저장되어 모든 기기에서 실시간으로 공유됩니다.
+최근 300개까지 불러오며, 저장이 10초 안에 끝나지 않으면 실패로 안내하고 입력한 글은 유지합니다.
+운영자 삭제 화면은 아직 구현하지 않았습니다. 삭제는 Firebase 콘솔에서 해당 글을 지워주세요.
 
-### Gmail 계정 준비
+## Gmail 계정 준비
 
 1. [Google 계정 보안](https://myaccount.google.com/security)에서 2단계 인증 설정
 2. [앱 비밀번호](https://myaccount.google.com/apppasswords)에서 전시용 비밀번호 발급
