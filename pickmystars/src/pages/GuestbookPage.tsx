@@ -1,13 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Screen } from "../components/Screen";
 import { useGame } from "../state/GameContext";
-import {
-  GUESTBOOK_KEY,
-  prepareEntry,
-  readEntries,
-  saveEntry,
-  type GuestbookEntry,
-} from "../guestbook/storage";
+import { prepareEntry, type GuestbookEntry } from "../guestbook/storage";
+import { addEntry, subscribeEntries } from "../guestbook/remote";
 
 const PAGE_SIZE = 4;
 export function GuestbookPage() {
@@ -19,6 +14,9 @@ export function GuestbookPage() {
   const [notice, setNotice] = useState("");
   const [page, setPage] = useState(1);
   const [loaded, setLoaded] = useState(false);
+  const [saving, setSaving] = useState(false);
+  // 저장이 늦어져 다시 눌러도 같은 글이 두 번 올라가지 않도록 같은 id를 재사용합니다.
+  const pending = useRef<{ key: string; entry: GuestbookEntry } | null>(null);
   useEffect(() => {
     if (activeScreen !== "guestbook") {
       setNickname("");
@@ -26,33 +24,35 @@ export function GuestbookPage() {
       setNotice("");
       return;
     }
-    const load = () => {
-      try {
-        setEntries(readEntries(localStorage));
+    setLoaded(false);
+    setPage(1);
+    return subscribeEntries(
+      (rows) => {
+        setEntries(rows);
         setLoaded(true);
         setError("");
-      } catch {
-        setLoaded(false);
-        setError(
-          "방명록을 불러오지 못했어요. 브라우저 저장 공간을 확인해주세요.",
-        );
-      }
-    };
-    load();
-    setPage(1);
-    const sync = (event: StorageEvent) => {
-      if (event.key === GUESTBOOK_KEY || event.key === null) load();
-    };
-    window.addEventListener("storage", sync);
-    return () => window.removeEventListener("storage", sync);
+      },
+      () =>
+        setError("방명록을 불러오지 못했어요. 인터넷 연결을 확인해주세요."),
+    );
   }, [activeScreen]);
   const pages = Math.max(1, Math.ceil(entries.length / PAGE_SIZE));
   const current = Math.min(page, pages);
-  const submit = (event: React.FormEvent) => {
+  const submit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (saving) return;
+    setSaving(true);
     try {
-      const entry = prepareEntry(nickname, message, guestbookWinner?.name);
-      setEntries(saveEntry(localStorage, entry));
+      const key = `${nickname}
+${message}
+${guestbookWinner?.name ?? ""}`;
+      if (pending.current?.key !== key)
+        pending.current = {
+          key,
+          entry: prepareEntry(nickname, message, guestbookWinner?.name),
+        };
+      await addEntry(pending.current.entry);
+      pending.current = null;
       setNickname("");
       setMessage("");
       setPage(1);
@@ -65,6 +65,8 @@ export function GuestbookPage() {
           ? failure.message
           : "저장하지 못했어요. 입력한 글은 유지되니 다시 시도해주세요.",
       );
+    } finally {
+      setSaving(false);
     }
   };
   return (
@@ -122,10 +124,10 @@ export function GuestbookPage() {
           )}
           <button
             className="guestbook-submit"
-            disabled={!loaded || !message.trim()}
+            disabled={!loaded || saving || !message.trim()}
             type="submit"
           >
-            한마디 남기기
+            {saving ? "남기는 중…" : "한마디 남기기"}
           </button>
           <p className="guestbook-help">
             모두가 함께 보는 공간이에요.
@@ -143,7 +145,7 @@ export function GuestbookPage() {
             <div className="guestbook-empty">
               방명록을 불러오는 중이에요.
               <br />
-              오류가 표시되면 저장 공간을 확인해주세요.
+              오류가 표시되면 인터넷 연결을 확인해주세요.
             </div>
           ) : entries.length === 0 ? (
             <div className="guestbook-empty">
@@ -215,7 +217,7 @@ export function GuestbookPage() {
             </nav>
           )}
           <p className="guestbook-storage-note">
-            이 브라우저에 남긴 기록이에요.
+            남긴 글은 모든 기기에 실시간으로 공유돼요.
           </p>
         </div>
       </div>
