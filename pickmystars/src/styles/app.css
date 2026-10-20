@@ -1864,3 +1864,63 @@ button,
 #photo .guestbook-photo-link { display: block; margin: 18px auto 0; }
 @media (max-width: 800px) { .guestbook-layout { grid-template-columns: 1fr; } #guestbook { padding: 70px 20px 30px; } .guestbook-panel { padding: 24px; } .guestbook-empty { min-height: 230px; } }
 @media (max-width: 480px) { .guestbook-cards { grid-template-columns: 1fr; } .guestbook-list-heading h2 { font-size: 23px; } }
+
+/* 처음 화면에서 선택한 남자·여자 아이돌 카드를 더 분명하게 강조합니다. */
+#home .category.selected {
+  border-color: #61203c;
+  box-shadow:
+    0 0 0 5px #ffc93c,
+    0 0 0 8px #61203c,
+    0 14px 30px #61203c40;
+  transform: translateY(-3px);
+}
+@media (max-width: 800px) {
+  #home .category.selected {
+    box-shadow:
+      0 0 0 4px #ffc93c,
+      0 0 0 6px #61203c,
+      0 10px 22px #61203c40;
+  }
+}
+
+/* 방명록으로 가는 버튼을 눈에 잘 띄게 합니다. */
+.guestbook-home-link,
+.guestbook-photo-link {
+  padding: 12px 28px;
+  border: 2px solid var(--link-color, #61203c);
+  border-radius: 999px;
+  background: #fffffff2;
+  color: var(--link-color, #61203c);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+  box-shadow: 0 4px 12px #61203c26;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+.guestbook-home-link:hover,
+.guestbook-photo-link:hover {
+  background: var(--link-color, #61203c);
+  color: #fff;
+  transform: translateY(-2px);
+}
+.guestbook-home-link:focus-visible,
+.guestbook-photo-link:focus-visible {
+  outline: 3px solid #ffc93c;
+  outline-offset: 3px;
+}
+#photo .guestbook-photo-link {
+  --link-color: var(--accent, #c75c91);
+}
+
+/* 처음 화면: 월드컵 시작하기 글자를 흰색으로 바꿔 더 잘 보이게 하고, 방명록 버튼은 포토부스와 같은 분홍색으로 맞춥니다. */
+#home .primary {
+  color: #fff;
+  text-shadow: 0 1px 3px #61203c99;
+}
+#home .guestbook-home-link {
+  --link-color: #c75c91;
+}
