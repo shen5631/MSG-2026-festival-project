@@ -22,7 +22,7 @@ npm run build
 npm run preview
 ```
 
-- `npm test`: 월드컵 진행·입력 검증, 촬영 순서·취소·크롭 및 이메일 API 관련 자동 테스트 23개
+- `npm test`: 월드컵 진행·입력 검증, 촬영 순서·취소·크롭 및 이메일 API 관련 자동 테스트 28개
 - `npm run typecheck`: TypeScript 검사
 - `npm run build`: 타입 검사 후 `dist/`에 배포용 파일 생성
 - `npm run preview`: 빌드 결과를 로컬에서 확인. 주소는 터미널 출력 참고
@@ -50,7 +50,7 @@ npm run preview
 사용자 영상과 저장 사진은 거울 방향이며 마이크는 요청하지 않습니다. 사진 업로드 기능은 없습니다.
 프레임 색 변경, 다시 찍기, 카메라 오류 안내를 지원합니다.
 화면을 나가거나 ESC로 처음으로 돌아가면 카메라·타이머를 종료하고 촬영 상태를 지웁니다.
-촬영·합성은 브라우저에서 처리합니다. 이메일 전송 버튼을 누르면 완성 사진과 입력한 이메일 주소를 서버 API 및 Resend 메일 서비스에 전달합니다.
+촬영·합성은 브라우저에서 처리합니다. 이메일 전송 버튼을 누르면 완성 사진과 입력한 이메일 주소를 서버 API 및 설정한 메일 서비스에 전달합니다.
 로컬에서는 `localhost`로 접속하고, 외부 주소에서 카메라를 사용하려면 HTTPS가 필요합니다.
 
 ### 카메라 없이 확인하기
@@ -121,28 +121,33 @@ pickmystars/
 전송 중에는 중복 클릭을 막고, 실패 시 주소 수정·재시도가 가능합니다. 화면 이탈 시 주소와 전송 UI 상태를 지웁니다.
 성공 안내는 메일 서비스가 요청을 수락했다는 뜻이며, 최종 수신을 보장하지는 않습니다.
 
-1. Resend 계정에서 발신 도메인을 인증하고 API 키를 발급합니다.
-2. `.env.example`을 참고해 앱 폴더의 `.env`에 서버 전용 값을 넣습니다.
+1. 발송용 Google 계정에서 2단계 인증을 설정하고 앱 비밀번호를 발급합니다.
+2. 로컬 `.env`와 Netlify 환경 변수에 아래 값을 입력합니다.
 
 ```dotenv
-RESEND_API_KEY=발급받은_API_키
-PHOTO_EMAIL_FROM=인증된_도메인의_발신주소
+MAIL_PROVIDER=gmail
+GMAIL_USER=발송할_Gmail_주소
+GMAIL_APP_PASSWORD=발급받은_앱_비밀번호
 ```
 
-이 값에는 `VITE_` 접두사를 붙이지 않습니다. 브라우저 코드에 API 키를 넣지 않습니다.
-로컬에서는 개발 서버를 재시작하면 Vite 미들웨어가 `/api/photo-email`을 처리합니다.
-Vercel에서는 Root Directory를 `pickmystars`로 지정하고 위 환경 변수를 등록하면 `api/photo-email.mjs`가 서버 함수로 실행됩니다.
-`npm run preview`나 정적 파일 호스팅만으로는 이메일 API가 실행되지 않습니다.
+일반 로그인 비밀번호가 아니라 앱 비밀번호를 사용합니다. 복사한 값에 공백이 있어도 제거해서 처리합니다.
+이 설정에는 `VITE_` 접두사를 붙이지 않습니다. 키와 비밀번호는 브라우저 코드·GitHub·채팅에 올리지 않습니다.
+로컬에서는 개발 서버를 재시작하면 Vite가 `/api/photo-email`을 처리합니다.
+Netlify는 환경 변수 저장 후 `npx netlify-cli deploy --prod`로 다시 배포합니다.
+Vercel에서도 동일 서버 API를 사용할 수 있습니다. `npm run preview`나 정적 파일 업로드만으로는 API가 실행되지 않습니다.
 
-완성 사진은 가로 640px JPEG로 압축해 첨부하며, 요청 크기는 3MB로 제한합니다.
-API는 서버 파일이나 Firebase에 주소·사진을 저장하지 않습니다. 메일 서비스에서는 발송 처리·보관 정책이 적용됩니다.
-메일 설정이 없으면 전송 실패 안내를 표시하며, 성공으로 처리하지 않습니다.
+Gmail 모드는 도메인 인증 없이 `GMAIL_USER` 주소에서 완성 사진을 발송합니다.
+JPEG 첨부는 가로 640px로 압축하며 요청 크기는 3MB로 제한합니다.
+API는 주소·사진을 서버 파일이나 Firebase에 저장하지 않으며 메일 서비스의 처리·보관 정책은 적용됩니다.
+Gmail 인증 실패, 수신 거절, 네트워크 오류는 성공으로 처리하지 않습니다.
+기본 동일 출처 검사와 프로세스 내 IP별 분당 5회 제한을 유지합니다. 여러 서버에 공유되는 제한은 아닙니다.
+Gmail 모드에는 서버 간 중복 방지가 없으므로 전송 결과가 불확실하면 메일함을 확인한 뒤 재시도합니다.
 
-같은 사진과 수신 주소로 재시도할 때 Resend 중복 방지 키를 사용합니다.
-동일 출처 확인과 프로세스 내 분당 5회 제한은 전시 PC의 반복 요청을 줄이기 위한 기본 장치입니다.
-불특정 다수에게 공개할 때는 공유 저장소 기반 요청 제한과 봇 방지 등을 추가해야 합니다. 현재 제한은 여러 서버 인스턴스에 공유되지 않습니다.
+Resend를 계속 쓸 경우에만 `MAIL_PROVIDER=resend`, `RESEND_API_KEY`, `PHOTO_EMAIL_FROM`을 설정합니다.
+Resend 모드에는 도메인 인증 및 테스트 수신자 제한이 적용되며, 같은 사진·주소의 요청에 중복 방지 키를 사용합니다.
 
-자동 테스트는 외부 발송 없이 서비스 응답을 대체해 검증합니다. 실제 메일 발송·수신은 운영 설정 후 별도 확인이 필요합니다.
+테스트는 실제 발송 없이 SMTP·메일 서비스 응답을 대체해 검증합니다.
+실제 계정 설정 후 로컬과 Netlify 양쪽에서 다른 이메일 주소로 수신되는지 확인해야 합니다.
 
 ## Netlify 배포 (GitHub 연결 없이)
 
@@ -159,7 +164,7 @@ npx netlify-cli deploy
 GitHub 저장소 생성·연결은 필요하지 않습니다. 기본 배포는 확인용 주소를 만듭니다.
 
 Netlify 사이트의 **Project configuration → Environment variables**에
-`RESEND_API_KEY`, `PHOTO_EMAIL_FROM`을 등록합니다. 범위를 선택할 수 있다면 **Functions**를 포함하고,
+`MAIL_PROVIDER=gmail`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`를 등록합니다. 범위를 선택할 수 있다면 **Functions**를 포함하고,
 실제 사용할 배포 환경에도 적용합니다. 로컬 `.env`만 작성해 두어도 배포 서버에 자동 등록되지는 않습니다.
 Firebase를 사용한다면 `VITE_FIREBASE_…` 값도 빌드 환경에 등록합니다.
 키는 소스 코드나 GitHub에 올리지 않습니다. 환경 변수 변경 후 다시 배포합니다.
@@ -170,7 +175,7 @@ npx netlify-cli deploy --prod
 
 이 명령은 앱을 빌드하고 정적 파일과 이메일 함수를 함께 업로드합니다.
 `dist` 폴더만 Netlify Drop에 끌어다 올리면 서버 함수는 배포되지 않으므로 이메일 전송은 작동하지 않습니다.
-실제 발송에는 Resend 발신 주소 설정이 필요하며, 테스트 발신 주소는 본인 계정 이메일 수신 확인용입니다.
+Gmail 계정과 앱 비밀번호 설정 후 다른 이메일 주소로 실제 수신 여부를 확인합니다.
 배포 주소에서 카메라 촬영 → 이메일 전송 → 수신 확인을 진행합니다.
 
 참고: [Netlify CLI 배포](https://cli.netlify.com/commands/deploy/),
@@ -185,3 +190,18 @@ npx netlify-cli deploy --prod
 글은 Firebase Realtime Database의 `guestbook/{id}` 에 저장되어 모든 기기에서 실시간으로 공유됩니다.
 최근 300개까지 불러오며, 저장이 10초 안에 끝나지 않으면 실패로 안내하고 입력한 글은 유지합니다.
 운영자 삭제 화면은 아직 구현하지 않았습니다. 삭제는 Firebase 콘솔에서 해당 글을 지워주세요.
+
+## Gmail 계정 준비
+
+1. [Google 계정 보안](https://myaccount.google.com/security)에서 2단계 인증 설정
+2. [앱 비밀번호](https://myaccount.google.com/apppasswords)에서 전시용 비밀번호 발급
+3. 위 Gmail 환경 변수 입력 후 로컬 서버 재시작 및 Netlify 재배포
+4. 다른 이메일로 사진 발송·수신과 스팸함 확인
+
+계정 정책에 따라 앱 비밀번호가 제공되지 않을 수 있습니다. 전시가 끝나면 전시용 앱 비밀번호를 삭제할 수 있습니다.
+하루 행사라도 Gmail 발송 제한은 적용됩니다. 개인 Gmail은 하루 500통 초과 등으로 일시 제한될 수 있으며,
+이는 보장된 발송 가능량이 아닙니다. Google 보안 정책이 배포 서버의 접속을 제한할 수도 있으므로 실제 환경에서 사전 확인합니다.
+
+참고: [앱 비밀번호](https://support.google.com/mail/answer/185833),
+[Gmail 발송 제한](https://support.google.com/mail/answer/22839),
+[Nodemailer Gmail 안내](https://nodemailer.com/guides/using-gmail).

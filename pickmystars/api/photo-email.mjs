@@ -6,6 +6,10 @@ export function createEmailHandler({
   env = process.env,
   fetchImpl = fetch,
   now = Date.now,
+  createTransportImpl = async (options) => {
+    const { default: nodemailer } = await import("nodemailer");
+    return nodemailer.createTransport(options);
+  },
 } = {}) {
   return async function handler(req, res) {
     const reply = (status, message) => {
@@ -29,7 +33,14 @@ export function createEmailHandler({
     } catch {
       return reply(403, "앱 화면에서 다시 전송해주세요.");
     }
-    if (!env.RESEND_API_KEY || !env.PHOTO_EMAIL_FROM) {
+    const gmail = env.MAIL_PROVIDER !== "resend";
+    const gmailUser = env.GMAIL_USER?.trim();
+    const gmailPassword = env.GMAIL_APP_PASSWORD?.replace(/\s/g, "");
+    if (
+      gmail
+        ? !gmailUser || !gmailPassword
+        : !env.RESEND_API_KEY || !env.PHOTO_EMAIL_FROM
+    ) {
       return reply(
         503,
         "이메일 전송 설정이 준비되지 않았어요. 운영자에게 알려주세요.",
@@ -93,6 +104,46 @@ export function createEmailHandler({
     usage.count++;
     attempts.set(ip, usage);
     try {
+      if (gmail) {
+        const transport = await createTransportImpl({
+          service: "gmail",
+          auth: { user: gmailUser, pass: gmailPassword },
+          connectionTimeout: 10000,
+          greetingTimeout: 10000,
+          socketTimeout: 20000,
+          logger: false,
+          debug: false,
+        });
+        try {
+          const result = await transport.sendMail({
+            from: { name: "P!ck My St☆r", address: gmailUser },
+            to: email,
+            subject: "P!ck My St☆r · 함께 남긴 네컷 사진",
+            text: "P!ck My St☆r에서 촬영한 네컷 사진을 보내드려요. 첨부된 사진을 확인해주세요!",
+            attachments: [
+              {
+                filename: "pick-my-star.jpg",
+                content: image,
+                contentType: "image/jpeg",
+              },
+            ],
+            disableFileAccess: true,
+            disableUrlAccess: true,
+          });
+          if (!result.accepted?.length || result.rejected?.length) {
+            return reply(
+              502,
+              "받는 이메일 주소가 거절됐어요. 주소를 확인해주세요.",
+            );
+          }
+          return reply(
+            200,
+            "메일 전송 요청이 접수됐어요. 받은편지함과 스팸함을 확인해주세요.",
+          );
+        } finally {
+          transport.close?.();
+        }
+      }
       const response = await fetchImpl("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -121,7 +172,18 @@ export function createEmailHandler({
         200,
         "메일 전송 요청이 접수됐어요. 받은편지함과 스팸함을 확인해주세요.",
       );
-    } catch {
+    } catch (error) {
+      // SMTP 응답 원문에는 주소 등이 포함될 수 있어 사용자에게 그대로 전달하지 않습니다.
+      if (gmail && error?.code === "EAUTH")
+        return reply(
+          503,
+          "Gmail 발신 계정 인증에 실패했어요. 운영자가 앱 비밀번호를 확인해주세요.",
+        );
+      if (gmail && error?.code === "EENVELOPE")
+        return reply(
+          502,
+          "이메일 주소가 거절됐어요. 주소 또는 Gmail 발송 한도를 확인해주세요.",
+        );
       return reply(
         502,
         "전송 결과를 확인하지 못했어요. 메일함을 확인한 뒤 필요하면 다시 시도해주세요.",
