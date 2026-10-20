@@ -5,6 +5,7 @@ const photo =
   "data:image/jpeg;base64," +
   Buffer.from([255, 216, 1, 2, 255, 217]).toString("base64");
 const env = {
+  MAIL_PROVIDER: "resend",
   RESEND_API_KEY: "test-key",
   PHOTO_EMAIL_FROM: "booth@example.com",
 };
