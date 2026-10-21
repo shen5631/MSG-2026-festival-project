@@ -19,7 +19,6 @@ export interface GameContextValue {
   winner: Idol;
   particle: string;
   activeScreen: ScreenId;
-  leavingScreen: ScreenId | null;
   navigate: (screen: ScreenId) => void;
   selectCategory: (category: Category) => void;
   setRound: (round: StartSize) => void;

@@ -9,18 +9,11 @@ export function Screen({
   id: ScreenId;
   children: ReactNode;
 }) {
-  const { activeScreen, leavingScreen, category } = useGame();
-  const className = [
-    "screen",
-    activeScreen !== id && leavingScreen !== id ? "hidden" : "",
-    leavingScreen === id ? "leaving" : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const { category } = useGame();
   return (
     <section
       id={id}
-      className={className}
+      className="screen"
       data-theme={id === "result" ? category : undefined}
     >
       {children}

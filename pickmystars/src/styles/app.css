@@ -1469,13 +1469,6 @@ button,
 .screen:not(.hidden) {
   animation: none;
 }
-.screen.leaving,
-#result.leaving {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-}
 #home .category,
 #play .idol,
 .primary,

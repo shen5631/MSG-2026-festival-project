@@ -6,7 +6,7 @@ import { createEmailHandler } from "./api/photo-email.mjs";
 export default defineConfig(({ mode }) => {
   const env = { ...process.env, ...loadEnv(mode, process.cwd(), "") };
   return {
-    base: "./",
+    base: "/",
     plugins: [
       react(),
       {
