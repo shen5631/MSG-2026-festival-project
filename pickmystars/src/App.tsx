@@ -59,6 +59,7 @@ function AppRoutes() {
   const location = useLocation();
   const routerNavigate = useNavigate();
   const activeScreen = pathScreen(location.pathname);
+  // 화면 간에 공유하는 선택과 월드컵 진행 상태
   const [category, setCategory] = useState<Category>("girl");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null,
@@ -67,12 +68,15 @@ function AppRoutes() {
   const [game, setGame] = useState<Tournament<Idol> | null>(null);
   const [pendingPick, setPendingPick] = useState<number | null>(null);
   const [isPicking, setIsPicking] = useState(false);
+  // 지연된 선택 처리에서 최신 게임을 참조하고 중복 클릭을 막습니다.
   const gameRef = useRef<Tournament<Idol> | null>(null);
   const pickLocked = useRef(false);
   const pickTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const canvasRef = useRef<HTMLDivElement>(null);
   const activeScreenRef = useRef<ScreenId>(activeScreen);
   activeScreenRef.current = activeScreen;
+
+  // 현재 대결과 진행률 표시 값
   const winner = game?.winner ?? idols[category][0];
   const candidates = game ? getMatch(game) : idols[category];
   const roundSize = game?.roundCandidates.length ?? round;

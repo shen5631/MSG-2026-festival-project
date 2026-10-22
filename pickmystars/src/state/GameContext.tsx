@@ -1,6 +1,5 @@
 import { createContext, useContext } from "react";
 import type { Category, Idol, ScreenId } from "../data/idols";
-
 import type { StartSize } from "../game/tournament";
 
 export interface GameContextValue {

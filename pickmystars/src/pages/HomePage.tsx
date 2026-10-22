@@ -27,6 +27,7 @@ export function HomePage() {
       <div className="categories">
         <button
           className={`card category boy${selectedCategory === "boy" ? " selected" : ""}`}
+          aria-pressed={selectedCategory === "boy"}
           onClick={() => selectCategory("boy")}
         >
           <div className="photo pair">
@@ -40,6 +41,7 @@ export function HomePage() {
         </button>
         <button
           className={`card category${selectedCategory === "girl" ? " selected" : ""}`}
+          aria-pressed={selectedCategory === "girl"}
           onClick={() => selectCategory("girl")}
         >
           <div className="photo pair">

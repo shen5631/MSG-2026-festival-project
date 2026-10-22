@@ -25,8 +25,8 @@ export interface IdolRank {
 // 월드컵 우승 횟수를 올립니다. 실패해도 게임 진행에는 영향을 주지 않습니다.
 export function recordWinner(idol: Idol) {
   if (!db) return;
-  update(ref(db, `${PATH}/${idol.id}`), { wins: increment(1) }).catch(
-    (error) => console.warn("우승자 기록 실패:", error),
+  update(ref(db, `${PATH}/${idol.id}`), { wins: increment(1) }).catch((error) =>
+    console.warn("우승자 기록 실패:", error),
   );
 }
 

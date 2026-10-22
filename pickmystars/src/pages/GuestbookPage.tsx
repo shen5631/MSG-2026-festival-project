@@ -32,8 +32,7 @@ export function GuestbookPage() {
         setLoaded(true);
         setError("");
       },
-      () =>
-        setError("방명록을 불러오지 못했어요. 인터넷 연결을 확인해주세요."),
+      () => setError("방명록을 불러오지 못했어요. 인터넷 연결을 확인해주세요."),
     );
   }, [activeScreen]);
   const pages = Math.max(1, Math.ceil(entries.length / PAGE_SIZE));
