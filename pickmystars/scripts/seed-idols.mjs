@@ -10,13 +10,18 @@ const env = Object.fromEntries(
   readFileSync(new URL("../.env", import.meta.url), "utf8")
     .split(/\r?\n/)
     .filter((line) => line.includes("=") && !line.startsWith("#"))
-    .map((line) => [line.slice(0, line.indexOf("=")), line.slice(line.indexOf("=") + 1)]),
+    .map((line) => [
+      line.slice(0, line.indexOf("=")),
+      line.slice(line.indexOf("=") + 1),
+    ]),
 );
 const base = `https://${env.VITE_FIREBASE_PROJECT_ID}-default-rtdb.firebaseio.com`;
 
 // idols.ts는 import.meta.env를 쓰므로 BASE_URL을 빈 값으로 바꾼 사본을 불러옵니다.
-const source = readFileSync(new URL("../src/data/idols.ts", import.meta.url), "utf8")
-  .replaceAll("import.meta.env.BASE_URL", '""');
+const source = readFileSync(
+  new URL("../src/data/idols.ts", import.meta.url),
+  "utf8",
+).replaceAll("import.meta.env.BASE_URL", '""');
 const dir = mkdtempSync(join(tmpdir(), "idols-"));
 const file = join(dir, "idols.ts");
 writeFileSync(file, source);
@@ -39,7 +44,11 @@ for (const gender of ["boy", "girl"]) {
 
 const existing = await (await fetch(`${base}/idols.json`)).json();
 if (existing?.error) {
-  console.error("DB 접근 실패:", existing.error, "(규칙에서 idols 읽기·쓰기를 허용했는지 확인하세요)");
+  console.error(
+    "DB 접근 실패:",
+    existing.error,
+    "(규칙에서 idols 읽기·쓰기를 허용했는지 확인하세요)",
+  );
   process.exit(1);
 }
 if (existing && !process.argv.includes("--force")) {

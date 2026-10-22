@@ -311,7 +311,12 @@ export function PhotoPage() {
           )}
         </div>
       </div>
-      <button className="guestbook-photo-link" onClick={() => navigate("guestbook")}>한마디 남기기 <span aria-hidden="true">›</span></button>
+      <button
+        className="guestbook-photo-link"
+        onClick={() => navigate("guestbook")}
+      >
+        한마디 남기기 <span aria-hidden="true">›</span>
+      </button>
     </Screen>
   );
 }

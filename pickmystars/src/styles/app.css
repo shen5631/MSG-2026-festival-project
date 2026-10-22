@@ -1,3 +1,5 @@
+/* 기본 스타일과 화면별 스타일입니다. 뒤쪽 반응형·상태 규칙이 앞쪽 설정을 덮어쓰므로 순서를 유지합니다. */
+
 * {
   box-sizing: border-box;
 }
@@ -1749,21 +1751,100 @@ button,
 }
 
 /* 카메라 촬영 상태: 기존 두 칸 레이아웃을 유지합니다. */
-#photo .camera-person { position: relative; overflow: hidden; min-height: 0; }
-.camera-instructions { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 11px; padding: 15px; }
-.live-camera { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-.camera-hidden { visibility: hidden; }
-.camera-countdown { position: absolute; inset: 0; display: grid; place-items: center; color: white; background: #00000020; font-size: 90px; font-weight: bold; text-shadow: 0 3px 15px #0009; pointer-events: none; }
-#photo .shot-thumbnails div { padding: 0; overflow: hidden; display: grid; place-items: center; }
-.shot-thumbnails img { width: 100%; height: 100%; object-fit: cover; }
-#photo .swatches .frame-swatch { width: 34px; height: 34px; border: 2px solid white; border-radius: 50%; box-shadow: 0 0 0 1px var(--booth-line); margin: 0; padding: 0; color: #513e49; font-size: 18px; }
-#photo .frame-swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--accent); }
-#photo .timer-preview button { flex: 1; border: 0; border-radius: 30px; padding: 9px 4px; background: var(--booth-soft); color: var(--booth-ink); font-size: 13px; margin: 0; }
-#photo .timer-preview button[aria-pressed="true"] { background: var(--accent); color: white; }
-#photo button:disabled { opacity: .55; }
-#photo .camera-status { font-size: 12px; line-height: 1.6; min-height: 36px; margin: 16px 0 0; color: var(--booth-ink); }
-#photo .camera-status[role="alert"] { color: #9d2448; }
-@media (max-width: 450px) { #photo .swatches .frame-swatch { width: 26px; height: 26px; } }
+#photo .camera-person {
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+.camera-instructions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  padding: 15px;
+}
+.live-camera {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+.camera-hidden {
+  visibility: hidden;
+}
+.camera-countdown {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: #00000020;
+  font-size: 90px;
+  font-weight: bold;
+  text-shadow: 0 3px 15px #0009;
+  pointer-events: none;
+}
+#photo .shot-thumbnails div {
+  padding: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.shot-thumbnails img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+#photo .swatches .frame-swatch {
+  width: 34px;
+  height: 34px;
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--booth-line);
+  margin: 0;
+  padding: 0;
+  color: #513e49;
+  font-size: 18px;
+}
+#photo .frame-swatch[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+#photo .timer-preview button {
+  flex: 1;
+  border: 0;
+  border-radius: 30px;
+  padding: 9px 4px;
+  background: var(--booth-soft);
+  color: var(--booth-ink);
+  font-size: 13px;
+  margin: 0;
+}
+#photo .timer-preview button[aria-pressed="true"] {
+  background: var(--accent);
+  color: white;
+}
+#photo button:disabled {
+  opacity: 0.55;
+}
+#photo .camera-status {
+  font-size: 12px;
+  line-height: 1.6;
+  min-height: 36px;
+  margin: 16px 0 0;
+  color: var(--booth-ink);
+}
+#photo .camera-status[role="alert"] {
+  color: #9d2448;
+}
+@media (max-width: 450px) {
+  #photo .swatches .frame-swatch {
+    width: 26px;
+    height: 26px;
+  }
+}
 
 .email-form {
   grid-column: 1 / -1;
@@ -1811,68 +1892,353 @@ button,
 }
 
 /* 방명록: 기존 화면은 유지하고 이 화면 안에서만 스타일을 적용합니다. */
-#guestbook { padding: 58px 4.5vw 48px; color: #650b2c; text-align: left; position: relative; }
-.guestbook-back { position: absolute; right: 4.5vw; top: 25px; border: 0; background: transparent; color: #802044; font-size: 14px; }
-.guestbook-back span { margin-left: 10px; }
-.guestbook-title { text-align: center; margin-bottom: 30px; }
-.guestbook-title h1 { font-size: clamp(36px, 4vw, 58px); margin: 0 0 10px; letter-spacing: -2px; }
-.guestbook-title p { margin: 0; font-size: 18px; color: #9e4e68; }
-.guestbook-layout { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(0, 2fr); gap: 12px; max-width: 1400px; margin: auto; align-items: stretch; }
-.guestbook-panel { border: 2px solid #ffb600; border-radius: 20px; background: #ffffffed; padding: clamp(22px, 2.4vw, 36px); min-width: 0; }
-.guestbook-panel h2 { font-size: clamp(23px, 2.5vw, 32px); margin: 0 0 20px; letter-spacing: -1px; }
-.guestbook-tag { display: inline-block; color: #ba487a; background: #ffedf5; border-radius: 24px; padding: 8px 14px; font-size: 14px; max-width: 100%; overflow-wrap: anywhere; }
-.guestbook-form label { display: block; font-weight: 700; font-size: 16px; margin: 24px 0 11px; }
-.guestbook-form label small { font-size: inherit; font-weight: 400; }
-.guestbook-form input, .guestbook-form textarea { width: 100%; color: #65102e; background: #fff; border: 1px solid #d9bbca; border-radius: 10px; padding: 14px; font: inherit; font-size: 14px; }
-.guestbook-form input::placeholder, .guestbook-form textarea::placeholder { color: #ac94a1; }
-.guestbook-form input:focus-visible, .guestbook-form textarea:focus-visible { outline: 2px solid #c96697; outline-offset: 3px; }
-.guestbook-textarea { position: relative; }
-.guestbook-form textarea { display: block; min-height: 165px; padding-bottom: 40px; resize: vertical; line-height: 1.7; }
-.guestbook-textarea > span { position: absolute; bottom: 14px; right: 15px; color: #ad879a; font-size: 13px; }
-.guestbook-submit { width: 100%; background: #d96796; border: 0; border-radius: 12px; color: white; padding: 16px; margin-top: 24px; font-size: 18px; font-weight: 700; }
-.guestbook-submit:disabled { opacity: .5; cursor: default; }
-.guestbook-help { color: #ad879a; text-align: center; font-size: 12px; line-height: 1.6; margin: 14px 0 0; }
-.guestbook-feedback { font-size: 14px; line-height: 1.6; color: #9d2754; }
-.guestbook-list { display: flex; flex-direction: column; }
-.guestbook-list-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
-.guestbook-list-heading h2 { margin: 0; }
-.guestbook-list-heading > span { color: #a46680; font-size: 14px; }
-.guestbook-list-heading > small { margin-left: auto; font-size: 14px; }
-.guestbook-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; flex: 1; align-content: start; }
-.guestbook-entry { border: 1px solid #f3b4d0; border-radius: 13px; padding: 22px; min-height: 205px; background: #fff; position: relative; display: flex; flex-direction: column; }
-.guestbook-entry .guestbook-tag { align-self: start; margin-right: 22px; font-size: 12px; padding: 7px 12px; }
-.guestbook-star { position: absolute; right: 18px; top: 18px; color: #ffe180; font-size: 25px; }
-.guestbook-entry h3 { font-size: 16px; margin: 20px 0 10px; overflow-wrap: anywhere; }
-.guestbook-entry > p { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; line-height: 1.7; margin: 0 0 24px; }
-.guestbook-entry time { margin-top: auto; color: #b596a5; font-size: 12px; }
-.guestbook-pagination { justify-content: center; flex-wrap: wrap; margin: 24px 0 0; gap: 4px; }
-.guestbook-pagination button { border: 0; border-radius: 8px; background: transparent; color: #7d284a; min-width: 36px; min-height: 36px; padding: 6px; }
-.guestbook-pagination button[aria-current="page"] { background: #d96796; color: white; }
-.guestbook-pagination button:disabled { opacity: .35; cursor: default; }
-.guestbook-empty { min-height: 350px; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #9d6c83; line-height: 1.8; padding: 24px; }
-.guestbook-empty > span { font-size: 44px; color: #edca65; margin-bottom: 15px; }
-.guestbook-empty p { font-size: 14px; }
-.guestbook-storage-note { text-align: center; color: #b499a6; font-size: 11px; margin: 20px 0 0; }
-.guestbook-home-link, .guestbook-photo-link { border: 0; background: transparent; color: #985173; padding: 12px 20px; font-size: 14px; margin-top: 12px; }
-#photo .guestbook-photo-link { display: block; margin: 18px auto 0; }
-@media (max-width: 800px) { .guestbook-layout { grid-template-columns: 1fr; } #guestbook { padding: 70px 20px 30px; } .guestbook-panel { padding: 24px; } .guestbook-empty { min-height: 230px; } }
-@media (max-width: 480px) { .guestbook-cards { grid-template-columns: 1fr; } .guestbook-list-heading h2 { font-size: 23px; } }
-
-/* 처음 화면에서 선택한 남자·여자 아이돌 카드를 더 분명하게 강조합니다. */
-#home .category.selected {
-  border-color: #61203c;
-  box-shadow:
-    0 0 0 5px #ffc93c,
-    0 0 0 8px #61203c,
-    0 14px 30px #61203c40;
-  transform: translateY(-3px);
+#guestbook {
+  padding: 58px 4.5vw 48px;
+  color: #650b2c;
+  text-align: left;
+  position: relative;
+}
+.guestbook-back {
+  position: absolute;
+  right: 4.5vw;
+  top: 25px;
+  border: 0;
+  background: transparent;
+  color: #802044;
+  font-size: 14px;
+}
+.guestbook-back span {
+  margin-left: 10px;
+}
+.guestbook-title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.guestbook-title h1 {
+  font-size: clamp(36px, 4vw, 58px);
+  margin: 0 0 10px;
+  letter-spacing: -2px;
+}
+.guestbook-title p {
+  margin: 0;
+  font-size: 18px;
+  color: #9e4e68;
+}
+.guestbook-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(0, 2fr);
+  gap: 12px;
+  max-width: 1400px;
+  margin: auto;
+  align-items: stretch;
+}
+.guestbook-panel {
+  border: 2px solid #ffb600;
+  border-radius: 20px;
+  background: #ffffffed;
+  padding: clamp(22px, 2.4vw, 36px);
+  min-width: 0;
+}
+.guestbook-panel h2 {
+  font-size: clamp(23px, 2.5vw, 32px);
+  margin: 0 0 20px;
+  letter-spacing: -1px;
+}
+.guestbook-tag {
+  display: inline-block;
+  color: #ba487a;
+  background: #ffedf5;
+  border-radius: 24px;
+  padding: 8px 14px;
+  font-size: 14px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.guestbook-form label {
+  display: block;
+  font-weight: 700;
+  font-size: 16px;
+  margin: 24px 0 11px;
+}
+.guestbook-form label small {
+  font-size: inherit;
+  font-weight: 400;
+}
+.guestbook-form input,
+.guestbook-form textarea {
+  width: 100%;
+  color: #65102e;
+  background: #fff;
+  border: 1px solid #d9bbca;
+  border-radius: 10px;
+  padding: 14px;
+  font: inherit;
+  font-size: 14px;
+}
+.guestbook-form input::placeholder,
+.guestbook-form textarea::placeholder {
+  color: #ac94a1;
+}
+.guestbook-form input:focus-visible,
+.guestbook-form textarea:focus-visible {
+  outline: 2px solid #c96697;
+  outline-offset: 3px;
+}
+.guestbook-textarea {
+  position: relative;
+}
+.guestbook-form textarea {
+  display: block;
+  min-height: 165px;
+  padding-bottom: 40px;
+  resize: vertical;
+  line-height: 1.7;
+}
+.guestbook-textarea > span {
+  position: absolute;
+  bottom: 14px;
+  right: 15px;
+  color: #ad879a;
+  font-size: 13px;
+}
+.guestbook-submit {
+  width: 100%;
+  background: #d96796;
+  border: 0;
+  border-radius: 12px;
+  color: white;
+  padding: 16px;
+  margin-top: 24px;
+  font-size: 18px;
+  font-weight: 700;
+}
+.guestbook-submit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.guestbook-help {
+  color: #ad879a;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 14px 0 0;
+}
+.guestbook-feedback {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #9d2754;
+}
+.guestbook-list {
+  display: flex;
+  flex-direction: column;
+}
+.guestbook-list-heading {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.guestbook-list-heading h2 {
+  margin: 0;
+}
+.guestbook-list-heading > span {
+  color: #a46680;
+  font-size: 14px;
+}
+.guestbook-list-heading > small {
+  margin-left: auto;
+  font-size: 14px;
+}
+.guestbook-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  flex: 1;
+  align-content: start;
+}
+.guestbook-entry {
+  border: 1px solid #f3b4d0;
+  border-radius: 13px;
+  padding: 22px;
+  min-height: 205px;
+  background: #fff;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.guestbook-entry .guestbook-tag {
+  align-self: start;
+  margin-right: 22px;
+  font-size: 12px;
+  padding: 7px 12px;
+}
+.guestbook-star {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  color: #ffe180;
+  font-size: 25px;
+}
+.guestbook-entry h3 {
+  font-size: 16px;
+  margin: 20px 0 10px;
+  overflow-wrap: anywhere;
+}
+.guestbook-entry > p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 0 0 24px;
+}
+.guestbook-entry time {
+  margin-top: auto;
+  color: #b596a5;
+  font-size: 12px;
+}
+.guestbook-pagination {
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 24px 0 0;
+  gap: 4px;
+}
+.guestbook-pagination button {
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #7d284a;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 6px;
+}
+.guestbook-pagination button[aria-current="page"] {
+  background: #d96796;
+  color: white;
+}
+.guestbook-pagination button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.guestbook-empty {
+  min-height: 350px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #9d6c83;
+  line-height: 1.8;
+  padding: 24px;
+}
+.guestbook-empty > span {
+  font-size: 44px;
+  color: #edca65;
+  margin-bottom: 15px;
+}
+.guestbook-empty p {
+  font-size: 14px;
+}
+.guestbook-storage-note {
+  text-align: center;
+  color: #b499a6;
+  font-size: 11px;
+  margin: 20px 0 0;
+}
+.guestbook-home-link,
+.guestbook-photo-link {
+  border: 0;
+  background: transparent;
+  color: #985173;
+  padding: 12px 20px;
+  font-size: 14px;
+  margin-top: 12px;
+}
+#photo .guestbook-photo-link {
+  display: block;
+  margin: 18px auto 0;
 }
 @media (max-width: 800px) {
-  #home .category.selected {
+  .guestbook-layout {
+    grid-template-columns: 1fr;
+  }
+  #guestbook {
+    padding: 70px 20px 30px;
+  }
+  .guestbook-panel {
+    padding: 24px;
+  }
+  .guestbook-empty {
+    min-height: 230px;
+  }
+}
+@media (max-width: 480px) {
+  .guestbook-cards {
+    grid-template-columns: 1fr;
+  }
+  .guestbook-list-heading h2 {
+    font-size: 23px;
+  }
+}
+
+/* 선택한 카드에 테마색 테두리와 바깥 링을 표시합니다. */
+#home .category {
+  --selection-color: #d85d98;
+  --selection-shadow: #d85d9833;
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+#home .category.boy {
+  --selection-color: #458bd3;
+  --selection-shadow: #458bd333;
+}
+#home .category:hover,
+#home .category.selected,
+#home .category.selected:hover {
+  border-color: var(--selection-color);
+  box-shadow:
+    0 0 0 3px #fff,
+    0 0 0 7px var(--selection-color),
+    0 8px 22px var(--selection-shadow);
+  transform: none;
+}
+/* 올리면 살짝 뜨고, 누르는 동안 원래 높이로 내려옵니다. */
+@media (hover: hover) {
+  #home .category:hover,
+  #home .category.selected:hover {
+    transform: translateY(-6px);
+  }
+}
+#home .category:active,
+#home .category.selected:active {
+  transform: translateY(0);
+}
+#home .category:hover .card-label,
+#home .category.selected .card-label {
+  box-shadow: inset 0 3px 0 var(--selection-color);
+}
+@media (max-width: 800px) {
+  #home .category:hover,
+  #home .category.selected,
+  #home .category.selected:hover {
     box-shadow:
-      0 0 0 4px #ffc93c,
-      0 0 0 6px #61203c,
-      0 10px 22px #61203c40;
+      0 0 0 2px #fff,
+      0 0 0 5px var(--selection-color),
+      0 6px 16px var(--selection-shadow);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #home .category {
+    transition: none;
+  }
+  #home .category:hover,
+  #home .category.selected:hover,
+  #home .category:active,
+  #home .category.selected:active {
+    transform: none;
   }
 }
 
