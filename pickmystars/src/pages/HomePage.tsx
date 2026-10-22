@@ -55,7 +55,8 @@ export function HomePage() {
         </button>
       </div>
       <div className="controls">
-        <div className="rounds">
+        <div className="rounds" data-round={round}>
+          <span className="round-indicator" aria-hidden="true" />
           {([16, 32, 64] as const).map((size) => (
             <button
               key={size}
