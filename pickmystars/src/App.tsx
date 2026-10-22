@@ -182,7 +182,6 @@ function AppRoutes() {
 
   // 새로고침이나 주소 직접 입력으로 진행 정보 없이 들어오면 처음 화면으로 보냅니다.
   const home = <Navigate to="/" replace />;
-  const playing = game !== null && !game.winner;
   const finished = Boolean(game?.winner);
 
   const theme = ["home", "guestbook"].includes(activeScreen)
@@ -223,7 +222,18 @@ function AppRoutes() {
         <div className="design-canvas" ref={canvasRef}>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/play" element={playing ? <PlayPage /> : home} />
+            <Route
+              path="/play"
+              element={
+                !game ? (
+                  home
+                ) : game.winner ? (
+                  <Navigate to="/result" replace />
+                ) : (
+                  <PlayPage />
+                )
+              }
+            />
             <Route path="/result" element={finished ? <ResultPage /> : home} />
             <Route path="/photo" element={finished ? <PhotoPage /> : home} />
             <Route path="/guestbook" element={<GuestbookPage />} />
