@@ -61,7 +61,6 @@ function Harness() {
     category: "boy",
     winner,
     activeScreen,
-    leavingScreen: null,
     navigate: setActiveScreen,
   } as GameContextValue;
   return (

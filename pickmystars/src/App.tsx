@@ -6,6 +6,14 @@ import {
   useState,
 } from "react";
 import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router";
+import {
   asset,
   idols,
   getTournamentRoster,
@@ -29,7 +37,28 @@ import { PhotoPage } from "./pages/PhotoPage";
 import { GuestbookPage } from "./pages/GuestbookPage";
 import { recordWinner } from "./lib/winners";
 
+const screenPath = (screen: ScreenId) =>
+  screen === "home" ? "/" : `/${screen}`;
+
+const pathScreen = (pathname: string): ScreenId => {
+  const screen = pathname.slice(1);
+  return ["play", "result", "photo", "guestbook"].includes(screen)
+    ? (screen as ScreenId)
+    : "home";
+};
+
 export default function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+  );
+}
+
+function AppRoutes() {
+  const location = useLocation();
+  const routerNavigate = useNavigate();
+  const activeScreen = pathScreen(location.pathname);
   const [category, setCategory] = useState<Category>("girl");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null,
@@ -41,11 +70,9 @@ export default function App() {
   const gameRef = useRef<Tournament<Idol> | null>(null);
   const pickLocked = useRef(false);
   const pickTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const [activeScreen, setActiveScreen] = useState<ScreenId>("home");
-  const [leavingScreen, setLeavingScreen] = useState<ScreenId | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
-  const animations = useRef<Animation[]>([]);
-  const activeScreenRef = useRef<ScreenId>("home");
+  const activeScreenRef = useRef<ScreenId>(activeScreen);
+  activeScreenRef.current = activeScreen;
   const winner = game?.winner ?? idols[category][0];
   const candidates = game ? getMatch(game) : idols[category];
   const roundSize = game?.roundCandidates.length ?? round;
@@ -56,49 +83,32 @@ export default function App() {
       ? (matchNumber / totalMatches) * 100
       : ((matchNumber - 1) / totalMatches) * 100;
 
-  const navigate = useCallback((screen: ScreenId) => {
-    if (screen === activeScreenRef.current) return;
+  const navigate = useCallback(
+    (screen: ScreenId) => {
+      if (screen === activeScreenRef.current) return;
+      routerNavigate(screenPath(screen));
+    },
+    [routerNavigate],
+  );
+
+  // 뒤로가기 등 어떤 방식으로 화면이 바뀌어도 진행 중인 선택을 정리하고 새 화면을 페이드인합니다.
+  useLayoutEffect(() => {
     pickTimers.current.forEach(clearTimeout);
     pickTimers.current = [];
     pickLocked.current = false;
     setIsPicking(false);
     setPendingPick(null);
-    animations.current.forEach((animation) => animation.cancel());
-    animations.current = [];
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    setLeavingScreen(reducedMotion ? null : activeScreenRef.current);
-    setActiveScreen(screen);
-    activeScreenRef.current = screen;
     window.scrollTo(0, 0);
-  }, []);
-
-  useLayoutEffect(() => {
-    if (!leavingScreen) return;
-    const outgoing = canvasRef.current?.querySelector<HTMLElement>(
-      `#${leavingScreen}`,
-    );
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const incoming = canvasRef.current?.querySelector<HTMLElement>(
       `#${activeScreen}`,
     );
-    if (!outgoing || !incoming) return;
-    const fadeOut = outgoing.animate([{ opacity: 1 }, { opacity: 0 }], {
-      duration: 180,
-      easing: "cubic-bezier(.22, 1, .36, 1)",
-      fill: "forwards",
-    });
-    const fadeIn = incoming.animate([{ opacity: 0 }, { opacity: 1 }], {
+    const fadeIn = incoming?.animate([{ opacity: 0 }, { opacity: 1 }], {
       duration: 320,
       easing: "cubic-bezier(.22, 1, .36, 1)",
     });
-    animations.current = [fadeOut, fadeIn];
-    fadeOut.onfinish = () => setLeavingScreen(null);
-    return () => {
-      fadeOut.cancel();
-      fadeIn.cancel();
-    };
-  }, [activeScreen, leavingScreen]);
+    return () => fadeIn?.cancel();
+  }, [activeScreen]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -170,6 +180,10 @@ export default function App() {
     );
   };
 
+  // 새로고침이나 주소 직접 입력으로 진행 정보 없이 들어오면 처음 화면으로 보냅니다.
+  const home = <Navigate to="/" replace />;
+  const finished = Boolean(game?.winner);
+
   const theme = ["home", "guestbook"].includes(activeScreen)
     ? "yellow"
     : category === "boy"
@@ -193,7 +207,6 @@ export default function App() {
         winner,
         particle: getCompanionParticle(winner.name),
         activeScreen,
-        leavingScreen,
         navigate,
         selectCategory,
         setRound,
@@ -207,11 +220,25 @@ export default function App() {
         style={{ backgroundImage: `url("${asset(`${theme}.svg`)}")` }}
       >
         <div className="design-canvas" ref={canvasRef}>
-          <HomePage />
-          <PlayPage />
-          <ResultPage />
-          <PhotoPage />
-          <GuestbookPage />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/play"
+              element={
+                !game ? (
+                  home
+                ) : game.winner ? (
+                  <Navigate to="/result" replace />
+                ) : (
+                  <PlayPage />
+                )
+              }
+            />
+            <Route path="/result" element={finished ? <ResultPage /> : home} />
+            <Route path="/photo" element={finished ? <PhotoPage /> : home} />
+            <Route path="/guestbook" element={<GuestbookPage />} />
+            <Route path="*" element={home} />
+          </Routes>
         </div>
       </main>
     </GameContext.Provider>
