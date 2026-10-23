@@ -244,6 +244,12 @@ function AppRoutes() {
             <Route path="*" element={home} />
           </Routes>
         </div>
+        {activeScreen !== "home" && (
+          <footer className="site-footer">
+            <span>2026 청아즐</span>
+            <span>미림마이스터고등학교 · MSG</span>
+          </footer>
+        )}
       </main>
     </GameContext.Provider>
   );
