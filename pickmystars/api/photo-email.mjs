@@ -118,8 +118,8 @@ export function createEmailHandler({
           const result = await transport.sendMail({
             from: { name: "P!ck My St☆r", address: gmailUser },
             to: email,
-            subject: "P!ck My St☆r · 함께 남긴 네컷 사진",
-            text: "P!ck My St☆r에서 촬영한 네컷 사진을 보내드려요. 첨부된 사진을 확인해주세요!",
+            subject: "P!ck My Star",
+            text: "P!ck My Star에서 촬영한 네컷 사진을 보내드려요. 첨부된 사진을 확인해주세요!",
             attachments: [
               {
                 filename: "pick-my-star.jpg",
@@ -157,8 +157,8 @@ export function createEmailHandler({
         body: JSON.stringify({
           from: env.PHOTO_EMAIL_FROM,
           to: [email],
-          subject: "P!ck My St☆r · 함께 남긴 네컷 사진",
-          text: "P!ck My St☆r에서 촬영한 네컷 사진을 보내드려요. 첨부된 사진을 확인해주세요!",
+          subject: "P!ck My Star",
+          text: "P!ck My Star에서 촬영한 네컷 사진을 보내드려요. 첨부된 사진을 확인해주세요!",
           attachments: [{ filename: "pick-my-star.jpg", content }],
         }),
         signal: AbortSignal.timeout(15000),
