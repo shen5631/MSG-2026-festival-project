@@ -2339,3 +2339,29 @@ button,
     transition: none;
   }
 }
+
+/* 개인 촬영 미리보기와 저장 사진의 비율을 일치시킵니다. */
+#photo .camera.solo-camera {
+  grid-template-columns: 1fr;
+  height: auto;
+  aspect-ratio: 3 / 2;
+}
+#photo .solo-photo-guide {
+  color: var(--booth-ink);
+  font-size: 14px;
+  line-height: 1.7;
+}
+#photo .photo-strip .solo-strip-slot {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: 3px;
+}
+.solo-strip-empty {
+  display: grid;
+  place-items: center;
+  background: #ffffffb3;
+  color: #80616a;
+  font-size: 14px;
+}

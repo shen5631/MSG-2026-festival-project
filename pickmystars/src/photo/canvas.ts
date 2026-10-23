@@ -1,4 +1,4 @@
-import { coverRect } from "./capture";
+import { coverRect } from "./capture.ts";
 
 export async function loadImage(source: string): Promise<HTMLImageElement> {
   const image = new Image();
@@ -39,10 +39,7 @@ function drawCover(
   context.restore();
 }
 
-export function capturePair(
-  video: HTMLVideoElement,
-  idol: HTMLImageElement,
-): string {
+export function captureSolo(video: HTMLVideoElement): string {
   if (video.readyState < 2 || !video.videoWidth || !video.videoHeight) {
     throw new Error("카메라가 준비되지 않았습니다. 잠시 후 다시 촬영해주세요.");
   }
@@ -58,21 +55,9 @@ export function capturePair(
     video.videoHeight,
     0,
     0,
-    600,
+    1200,
     800,
     true,
-  );
-  drawCover(
-    context,
-    idol,
-    idol.naturalWidth,
-    idol.naturalHeight,
-    600,
-    0,
-    600,
-    800,
-    false,
-    0.25,
   );
   return canvas.toDataURL("image/jpeg", 0.94);
 }
@@ -80,7 +65,6 @@ export function capturePair(
 export async function createPhotoStrip(
   shots: string[],
   color: string,
-  name: string,
 ): Promise<Blob> {
   if (shots.length !== 4) throw new Error("네 장의 촬영을 완료해주세요.");
   const images = await Promise.all(shots.map(loadImage));
@@ -99,7 +83,7 @@ export async function createPhotoStrip(
     context.drawImage(image, 40, 72 + index * 824, 1200, 800),
   );
   context.font = "28px sans-serif";
-  context.fillText(name + " · 함께 남기는 네컷", 640, canvas.height - 36, 1160);
+  context.fillText("나만의 네컷", 640, canvas.height - 36, 1160);
   return new Promise((resolve, reject) =>
     canvas.toBlob((blob) => {
       if (blob) resolve(blob);

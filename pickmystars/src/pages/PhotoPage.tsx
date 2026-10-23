@@ -13,7 +13,7 @@ const frames = [
 export function PhotoPage() {
   const { winner, navigate, activeScreen, category } = useGame();
   const active = activeScreen === "photo";
-  const booth = usePhotobooth(active, winner.image, winner.name);
+  const booth = usePhotobooth(active);
   const [frame, setFrame] = useState(
     category === "boy" ? "#b6cdf4" : "#f4bbd5",
   );
@@ -100,13 +100,13 @@ export function PhotoPage() {
         ← 결과로 돌아가기
       </button>
       <h2>
-        최애와 함께 <em>찰칵!</em>
+        나만의 네컷 <em>찰칵!</em>
       </h2>
-      <p className="intro">우리만의 특별한 순간을 남겨보세요</p>
+      <p className="intro">오늘의 나를 네컷으로 남겨보세요</p>
       <div className="booth-layout">
         <div className="camera-panel">
           <p>카메라 미리보기</p>
-          <div className="camera">
+          <div className="camera solo-camera">
             <div className="camera-person">
               <video
                 ref={booth.videoRef}
@@ -130,18 +130,13 @@ export function PhotoPage() {
                 </div>
               )}
             </div>
-            <img
-              className="booth-idol camera-idol"
-              alt="함께 촬영할 최애"
-              src={winner.image}
-            />
             {booth.countdown !== null && (
               <div className="camera-countdown" aria-live="assertive">
                 {booth.countdown}
               </div>
             )}
             <span className="camera-badge">
-              {complete ? "촬영 완료! 이메일로 받아보세요" : "함께 남기는 네컷"}
+              {complete ? "촬영 완료! 이메일로 받아보세요" : "나만의 네컷"}
             </span>
           </div>
           <p className="shot-count" aria-live="polite">
@@ -171,14 +166,9 @@ export function PhotoPage() {
         <div className="booth-settings">
           <div className="settings-body">
             <h3>나만의 포토부스</h3>
-            <div className="chosen-idol">
-              <img
-                className="booth-idol"
-                alt="선택한 최애"
-                src={winner.image}
-              />
-              <strong className="booth-name">{winner.name}</strong>
-            </div>
+            <p className="solo-photo-guide">
+              편하게 포즈를 취하고 나만의 네컷을 남겨보세요.
+            </p>
             <p>프레임 색상</p>
             <div className="swatches">
               {frames.map((option) => (
@@ -223,18 +213,24 @@ export function PhotoPage() {
           <div className="strip-preview">
             <p>완성 미리보기</p>
             <div className="photo-strip" style={{ background: frame }}>
-              {[0, 1, 2, 3].map((index) => (
-                <img
-                  key={index}
-                  className="booth-idol"
-                  alt={
-                    booth.shots[index]
-                      ? `${index + 1}번째 완성 사진`
-                      : `${index + 1}번째 촬영 대기`
-                  }
-                  src={booth.shots[index] || winner.image}
-                />
-              ))}
+              {[0, 1, 2, 3].map((index) =>
+                booth.shots[index] ? (
+                  <img
+                    key={index}
+                    className="solo-strip-slot"
+                    alt={`${index + 1}번째 완성 사진`}
+                    src={booth.shots[index]}
+                  />
+                ) : (
+                  <div
+                    key={index}
+                    className="solo-strip-slot solo-strip-empty"
+                    aria-label={`${index + 1}번째 촬영 대기`}
+                  >
+                    {index + 1}
+                  </div>
+                ),
+              )}
             </div>
           </div>
           <div className="booth-actions">

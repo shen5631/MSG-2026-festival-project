@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { captureSequence } from "../photo/capture";
-import { capturePair, createPhotoStrip, loadImage } from "../photo/canvas";
+import { captureSolo, createPhotoStrip } from "../photo/canvas";
 
 type CameraStatus = "idle" | "requesting" | "ready" | "error";
 
@@ -18,11 +18,7 @@ function cameraError(error: unknown): string {
     : "카메라 연결에 실패했어요. 다시 시도해주세요.";
 }
 
-export function usePhotobooth(
-  active: boolean,
-  idolImage: string,
-  winnerName: string,
-) {
+export function usePhotobooth(active: boolean) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const requestVersion = useRef(0);
@@ -59,7 +55,7 @@ export function usePhotobooth(
     setCountdown(null);
     setShooting(false);
     return stop;
-  }, [active, idolImage, stop]);
+  }, [active, stop]);
 
   const startCamera = async () => {
     if (!activeRef.current || status === "requesting" || status === "ready")
@@ -124,7 +120,6 @@ export function usePhotobooth(
     setShots([]);
     setError("");
     try {
-      const idol = await loadImage(idolImage);
       controller.signal.throwIfAborted();
       await captureSequence({
         seconds,
@@ -133,7 +128,7 @@ export function usePhotobooth(
         capture: () => {
           if (!videoRef.current)
             throw new Error("카메라 화면을 찾을 수 없습니다.");
-          return capturePair(videoRef.current, idol);
+          return captureSolo(videoRef.current);
         },
         onShot: (shot) => setShots((previous) => [...previous, shot]),
       });
@@ -161,7 +156,7 @@ export function usePhotobooth(
 
   const makeEmailPhoto = async (color: string) => {
     if (shots.length !== 4) throw new Error("네 장의 촬영을 완료해주세요.");
-    const blob = await createPhotoStrip(shots, color, winnerName);
+    const blob = await createPhotoStrip(shots, color);
     const bitmap = await createImageBitmap(blob);
     try {
       const canvas = document.createElement("canvas");
