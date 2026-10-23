@@ -2339,3 +2339,373 @@ button,
     transition: none;
   }
 }
+
+/* 개인 촬영 미리보기와 저장 사진의 비율을 일치시킵니다. */
+#photo .camera.solo-camera {
+  grid-template-columns: 1fr;
+  height: auto;
+  aspect-ratio: 3 / 2;
+}
+#photo .solo-photo-guide {
+  color: var(--booth-ink);
+  font-size: 14px;
+  line-height: 1.7;
+}
+#photo .photo-strip .solo-strip-slot {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: 3px;
+}
+.solo-strip-empty {
+  display: grid;
+  place-items: center;
+  background: #ffffffb3;
+  color: #80616a;
+  font-size: 14px;
+}
+
+/* 스티커 편집: 미리보기와 이메일 출력은 같은 정규화 좌표를 사용합니다. */
+#photo .photo-strip.decorated-strip {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+}
+#photo .photo-strip img.strip-composite {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1280 / 3434;
+  object-fit: contain;
+  border-radius: 0;
+}
+.sticker-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.placed-sticker {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  transform-origin: center;
+}
+.placed-sticker svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+}
+#photo .sticker-open {
+  margin-top: 14px;
+}
+#photo .sticker-entry-note {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--booth-ink);
+}
+.sticker-editor-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 20px;
+  background: #46203299;
+  display: grid;
+  place-items: center;
+}
+.sticker-editor {
+  width: min(1100px, 100%);
+  height: min(920px, 94dvh);
+  background: #fffafc;
+  border: 2px solid #e4b5cf;
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #682249;
+  box-shadow: 0 20px 80px #31172744;
+}
+.sticker-editor-heading {
+  height: auto;
+  flex-shrink: 0;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 1px solid #e4b5cf;
+  background: white;
+}
+.sticker-editor-heading h2 {
+  margin: 0 0 6px;
+  font-size: 23px;
+}
+.sticker-editor-heading p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.sticker-clock {
+  margin-left: auto;
+  padding: 10px 16px;
+  background: #fbeaf3;
+  border-radius: 999px;
+  font-size: 24px;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.sticker-clock.urgent {
+  color: #a51d46;
+  background: #ffe3e6;
+}
+.sticker-finish {
+  border: 0;
+  border-radius: 999px;
+  background: #d85d98;
+  color: white;
+  padding: 12px 20px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+.sticker-editor-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  flex: 1;
+  min-height: 0;
+}
+.sticker-canvas-scroll {
+  overflow: auto;
+  padding: 24px;
+  background: #f0eaf0;
+}
+.sticker-canvas {
+  width: min(285px, 100%, calc((94dvh - 160px) * 0.3727));
+  min-width: 140px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 18px #35172b22;
+}
+.sticker-canvas > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+.sticker-handle {
+  cursor: grab;
+  touch-action: none;
+  outline-offset: 2px;
+}
+.sticker-handle[aria-pressed="true"] {
+  outline: 2px dashed #d85d98;
+}
+.sticker-handle:active {
+  cursor: grabbing;
+}
+.sticker-handle:disabled {
+  cursor: default;
+  outline: none;
+  opacity: 1;
+}
+.sticker-tools {
+  padding: 20px;
+  overflow-y: auto;
+  background: white;
+}
+.sticker-tools h3 {
+  margin: 0 0 12px;
+  font-size: 17px;
+}
+.sticker-tools h3 small {
+  font-size: 12px;
+  color: #a87d95;
+}
+.sticker-palette {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.sticker-palette button {
+  height: 72px;
+  padding: 8px;
+  background: #faf7fa;
+  border: 1px solid #ead6e1;
+  border-radius: 12px;
+}
+.sticker-palette svg {
+  width: 100%;
+  height: 100%;
+}
+.sticker-palette button:hover:not(:disabled) {
+  border-color: #d85d98;
+  background: #fbeaf3;
+}
+.sticker-palette button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.sticker-hint {
+  font-size: 12px;
+  color: #95677f;
+  line-height: 1.7;
+}
+.sticker-adjustments {
+  border: 1px solid #e4b5cf;
+  border-radius: 12px;
+  padding: 14px;
+}
+.sticker-adjustments legend {
+  font-size: 14px;
+  padding: 0 5px;
+}
+.sticker-adjustments label {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+.sticker-adjustments input {
+  width: 100%;
+  accent-color: #d85d98;
+}
+.sticker-adjustments:disabled {
+  opacity: 0.5;
+}
+.sticker-delete {
+  width: 100%;
+  border: 1px solid #d85d98;
+  padding: 10px;
+  background: white;
+  border-radius: 10px;
+  color: #a51d46;
+}
+.sticker-expired {
+  margin: 0;
+  padding: 10px 24px;
+  background: #fff0cf;
+  font-size: 13px;
+}
+@media (max-width: 700px) {
+  .sticker-editor-backdrop {
+    padding: 8px;
+  }
+  .sticker-editor {
+    height: 96dvh;
+  }
+  .sticker-editor-heading {
+    padding: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .sticker-editor-heading > div {
+    flex-basis: 100%;
+  }
+  .sticker-editor-heading h2 {
+    font-size: 20px;
+  }
+  .sticker-clock {
+    margin-left: 0;
+    font-size: 20px;
+    padding: 6px 12px;
+  }
+  .sticker-finish {
+    margin-left: auto;
+  }
+  .sticker-editor-body {
+    grid-template-columns: minmax(0, 1fr) 155px;
+  }
+  .sticker-canvas-scroll {
+    padding: 10px;
+  }
+  .sticker-tools {
+    padding: 10px;
+  }
+  .sticker-palette {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+  }
+  .sticker-palette button {
+    height: 54px;
+    padding: 4px;
+  }
+}
+
+#photo .photo-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 18px;
+}
+#photo .photo-filters button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 4px;
+  border: 2px solid #eddae5;
+  border-radius: 12px;
+  background: #fff;
+  color: #78435e;
+  font: inherit;
+  font-size: 11px;
+  white-space: nowrap;
+  min-width: 0;
+  margin-bottom: 0;
+  cursor: pointer;
+  transition:
+    border-color 160ms,
+    background-color 160ms;
+}
+#photo .photo-filters button[aria-pressed="true"] {
+  border-color: #d85d98;
+  background: #fff0f7;
+  font-weight: 700;
+}
+#photo .photo-filters button:focus-visible {
+  outline: 3px solid #bdddf2;
+  outline-offset: 2px;
+}
+#photo .photo-filters button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.filter-sample {
+  width: 100%;
+  max-width: 52px;
+  aspect-ratio: 1.3;
+  border-radius: 7px;
+  background:
+    radial-gradient(circle at 65% 28%, #ffe694 0 15%, transparent 16%),
+    linear-gradient(150deg, #bdddf2 45%, #d895ae 46% 70%, #87ac94 71%);
+}
+
+/* 양쪽 패널의 마지막 안내와 촬영 후 버튼을 같은 하단 행에 맞춥니다. */
+#photo .camera-panel {
+  display: flex;
+  flex-direction: column;
+}
+#photo .camera-panel > * {
+  flex-shrink: 0;
+}
+#photo .camera-panel .shot-thumbnails {
+  margin-bottom: 16px;
+}
+#photo .camera-panel .camera-status {
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  margin: auto 0 0;
+}
+#photo .booth-actions button {
+  min-height: 46px;
+}
+@media (max-width: 850px) {
+  #photo .camera-panel .camera-status {
+    min-height: 0;
+  }
+}
