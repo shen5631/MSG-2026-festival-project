@@ -1,6 +1,7 @@
 import type { PhotoFilterId } from "../photo/filters";
 import {
   useEffect,
+  useId,
   useRef,
   useState,
   type Dispatch,
@@ -25,13 +26,20 @@ import {
 export function StickerGraphic({ stickerId }: { stickerId: StickerId }) {
   const [x, y, width, height] = findSticker(stickerId).rect;
   const sheet = getStickerSheet(stickerId);
+  const clipId = useId();
   return (
     <svg
       viewBox={`${x} ${y} ${width} ${height}`}
       aria-hidden="true"
       focusable="false"
     >
+      <defs>
+        <clipPath id={clipId}>
+          <rect x={x} y={y} width={width} height={height} />
+        </clipPath>
+      </defs>
       <image
+        clipPath={`url(#${clipId})`}
         href={asset(sheet.file)}
         width={sheet.width}
         height={sheet.height}

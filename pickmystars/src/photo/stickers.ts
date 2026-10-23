@@ -34,9 +34,51 @@ export const stickerCatalog = [
   { id: "burst", name: "민트 반짝임", rect: [70, 940, 330, 310] },
   { id: "love", name: "핑크 러브", rect: [440, 960, 345, 255] },
   { id: "bubble", name: "Good Vibes", rect: [800, 990, 450, 205] },
+  {
+    id: "emphasis",
+    name: "핑크 강조 표시",
+    rect: [130, 70, 390, 660],
+    sheet: "pastelLabels",
+  },
+  {
+    id: "dizzy",
+    name: "빙글빙글 표정",
+    rect: [640, 332, 570, 166],
+    sheet: "pastelLabels",
+  },
+  {
+    id: "so-cute",
+    name: "so cute",
+    rect: [39, 930, 590, 119],
+    sheet: "pastelLabels",
+  },
+  {
+    id: "animal-ears",
+    name: "동물 귀",
+    rect: [25, 230, 625, 280],
+    sheet: "pastelIcons",
+  },
+  {
+    id: "love-note",
+    name: "love :3",
+    rect: [700, 235, 515, 330],
+    sheet: "pastelIcons",
+  },
+  {
+    id: "pink-spiral",
+    name: "핑크 소용돌이",
+    rect: [50, 655, 555, 555],
+    sheet: "pastelIcons",
+  },
 ] as const;
 
 export const stickerSheets = {
+  pastelLabels: {
+    file: "stickers/pastel-labels.png",
+    width: 1254,
+    height: 1254,
+  },
+  pastelIcons: { file: "stickers/pastel-icons.png", width: 1254, height: 1254 },
   original: { file: "stickers/y2k-atlas.png", width: 1280, height: 1280 },
   extras: { file: "stickers/y2k-extras.png", width: 1254, height: 1254 },
 } as const;
