@@ -1,11 +1,11 @@
 # P!ck My St☆r · 개발 안내
 
 React + TypeScript + Vite 기반의 아이돌 이상형 월드컵·카메라 포토부스입니다.
-통계 저장에는 Firebase Realtime Database를 사용하며, 별도 로그인 기능은 없습니다.
+방명록 실시간 공유와 최종 우승 횟수 저장에 Firebase Realtime Database를 사용하며, 별도 로그인 기능은 없습니다.
 
 ## 실행과 검사
 
-이 README가 있는 `pickmystars` 폴더에서 실행합니다. Node.js 22.12 이상이 필요합니다.
+이 README가 있는 `pickmystars` 폴더에서 실행합니다. Node.js 24를 권장하며 최소 22.12 이상이 필요합니다. Netlify도 Node.js 24로 빌드합니다.
 
 ```sh
 npm install
@@ -20,12 +20,25 @@ npm test
 npm run typecheck
 npm run build
 npm run preview
+npm run format
+npm run format:check
 ```
 
 - `npm test`: 월드컵 진행·입력 검증, 촬영 순서·취소·크롭 및 이메일 API 관련 자동 테스트 28개
 - `npm run typecheck`: TypeScript 검사
 - `npm run build`: 타입 검사 후 `dist/`에 배포용 파일 생성
-- `npm run preview`: 빌드 결과를 로컬에서 확인. 주소는 터미널 출력 참고
+- `npm run preview`: 빌드 결과를 로컬에서 확인. 이메일 API는 실행하지 않습니다. 주소는 터미널 출력 참고
+
+- `npm run format`: Prettier로 코드·문서 정리
+- `npm run format:check`: 포맷 검사
+
+패치를 받거나 브랜치를 바꾼 후 패키지를 찾지 못하면 `npm install` 후 개발 서버를 다시 켭니다.
+
+## 화면 경로
+
+`/` 메인, `/play` 대결, `/result` 결과, `/photo` 촬영, `/guestbook` 방명록으로 구성합니다.
+게임과 촬영 상태는 메모리에 있어 새로고침하면 사라집니다. 진행 정보 없이 대결·결과·촬영 경로로 직접 들어오면 처음 화면으로 이동합니다.
+ESC도 처음 화면으로 돌아갑니다. 방명록 글과 우승 횟수는 Firebase에 저장합니다.
 
 ## 월드컵과 아이돌 데이터
 
@@ -33,11 +46,16 @@ npm run preview
 후보는 중복 ID 없이 랜덤 추첨하고 선택한 후보만 다음 라운드에 진출합니다.
 게이지는 현재 라운드 기준으로 차며 다음 라운드에서 초기화됩니다. 선택 중에는 중복 입력을 막습니다.
 
-명단은 `src/data/idols.ts`, 대표 사진은 `public/assets/idols/이름.jpg`에 있습니다.
-파일명이 이름과 다르면 명단의 파일명 인자로 지정합니다.
+명단과 경로는 `src/data/idols.ts`, 대표 사진은 `public/assets/idols/`에 있습니다.
+교체한 18명 사진은 `portraitFiles`에서 영문 파일명으로 연결합니다. 예: `지우: "jiwoo"` → `jiwoo.jpg`.
+영문 매핑이 없는 후보는 명단의 파일명 인자 또는 이름으로 사진을 찾습니다.
+새 사진도 영문 파일명을 사용하면 macOS 한글 파일명 정규화 차이로 이미지가 로딩되지 않는 문제를 피할 수 있습니다.
+사진 교체 후 `portraitFiles` 매핑도 함께 수정합니다.
+
+카테고리 카드에는 호버·클릭 이동 효과와 선택 테두리가 있고, 강수 선택 배경은 좌우로 부드럽게 이동합니다.
 
 - 남돌: 64명 대표 사진 연결 완료
-- 여돌: 64명 대표 사진 연결 완료. 사진별 출처와 유형은 [사진 출처 목록](docs/GIRL_PHOTO_SOURCES.md) 참고
+- 여돌: 64명 대표 사진 연결 완료. 기존 수집 기록은 [사진 출처 목록](docs/GIRL_PHOTO_SOURCES.md) 참고. 이후 수동 교체한 사진은 출처 기록과 일치하는지 별도 확인이 필요합니다.
 - `boy-1`, `girl-1` 등의 ID는 명단 순서로 생성되며 DB 통계의 키로도 사용됩니다. 기존 통계가 있다면 명단 순서를 임의로 바꾸지 않습니다.
 - `getTournamentRoster`는 명단이 64명보다 적을 때 임시 후보를 채웁니다. 현재는 각 64명이므로 임시 후보가 생성되지 않습니다.
 
@@ -60,7 +78,7 @@ npm run preview
 `?mode=denied`, `?mode=missing`, `?mode=pending`으로 권한 거절·장치 없음·권한 응답 지연 상황을 확인합니다.
 실제 전시용 장치의 카메라 권한과 화각은 해당 컴퓨터에서 확인해야 합니다.
 
-## Firebase 통계 설정
+## Firebase 방명록·통계 설정
 
 앱 폴더에 `.env` 파일을 만들고 사용하는 Firebase 프로젝트의 값을 입력합니다.
 이 파일은 Git에서 제외되어 있으므로 클론한 컴퓨터마다 따로 준비합니다.
@@ -76,9 +94,11 @@ VITE_FIREBASE_DATABASE_URL=실제_Realtime_Database_URL
 ```
 
 변경 후 개발 서버를 다시 실행합니다. `databaseURL`을 생략하면 Firebase SDK가 프로젝트의 기본 주소를 사용합니다.
-Firebase 설정이 없거나 초기화에 실패하면 DB 기능을 건너뛰며 게임·카메라 화면은 계속 실행됩니다.
+Firebase 설정이 없거나 초기화에 실패해도 게임·카메라는 실행되지만 방명록 저장·조회와 우승 기록은 사용할 수 없습니다.
+`VITE_` 값은 클라이언트 빌드에 포함되므로 DB 접근 권한은 Firebase 규칙으로 관리합니다.
 실제 저장·조회에는 해당 DB의 접근 규칙이 요청을 허용해야 합니다.
 
+- 방명록은 `guestbook/{id}`에 저장하고 실시간으로 구독합니다.
 - 결승 우승 시 `idols/{아이돌ID}/wins`를 1 증가시킵니다. 개별 대결 승리 횟수는 집계하지 않습니다.
 - DB 기록 실패는 콘솔에 표시하며 게임 진행을 막지 않습니다.
 - `getRanking`은 우승 횟수 내림차순 조회 함수입니다. 순위 화면은 아직 연결하지 않았습니다.
@@ -103,9 +123,10 @@ pickmystars/
 │   ├── components/       # 공통 화면 컴포넌트
 │   ├── data/idols.ts     # 이름, 그룹, ID, 사진 경로
 │   ├── game/             # 랜덤 추첨과 토너먼트 로직
+│   ├── guestbook/        # 방명록 검증·Firebase 저장과 구독
 │   ├── hooks/            # 카메라·촬영 상태 관리
 │   ├── lib/              # Firebase 초기화, 우승 기록·조회
-│   ├── pages/            # 메인, 대결, 결과, 포토부스
+│   ├── pages/            # 메인, 대결, 결과, 포토부스, 방명록
 │   ├── photo/            # 촬영 순서와 Canvas 합성
 │   ├── state/            # 공유 상태와 타입
 │   ├── styles/           # 화면 스타일
@@ -116,6 +137,8 @@ pickmystars/
 `node_modules/`, `dist/`, `.env`는 Git에 올리지 않습니다.
 
 ## 사진 이메일 전송 설정
+
+로컬 `.env`에 다음 Gmail 항목을 추가합니다. `.env.example`에는 실제 비밀번호를 넣지 않습니다.
 
 사진 저장 버튼 대신 **이메일로 전송하기 → 주소 입력 → 이 주소로 전송하기**를 사용합니다.
 전송 중에는 중복 클릭을 막고, 실패 시 주소 수정·재시도가 가능합니다. 화면 이탈 시 주소와 전송 UI 상태를 지웁니다.
@@ -133,7 +156,7 @@ GMAIL_APP_PASSWORD=발급받은_앱_비밀번호
 일반 로그인 비밀번호가 아니라 앱 비밀번호를 사용합니다. 복사한 값에 공백이 있어도 제거해서 처리합니다.
 이 설정에는 `VITE_` 접두사를 붙이지 않습니다. 키와 비밀번호는 브라우저 코드·GitHub·채팅에 올리지 않습니다.
 로컬에서는 개발 서버를 재시작하면 Vite가 `/api/photo-email`을 처리합니다.
-Netlify는 환경 변수 저장 후 `npx netlify-cli deploy --prod`로 다시 배포합니다.
+Netlify는 환경 변수 저장 후 `npx netlify deploy --build --prod`로 다시 배포합니다.
 Vercel에서도 동일 서버 API를 사용할 수 있습니다. `npm run preview`나 정적 파일 업로드만으로는 API가 실행되지 않습니다.
 
 Gmail 모드는 도메인 인증 없이 `GMAIL_USER` 주소에서 완성 사진을 발송합니다.
@@ -149,18 +172,19 @@ Resend 모드에는 도메인 인증 및 테스트 수신자 제한이 적용되
 테스트는 실제 발송 없이 SMTP·메일 서비스 응답을 대체해 검증합니다.
 실제 계정 설정 후 로컬과 Netlify 양쪽에서 다른 이메일 주소로 수신되는지 확인해야 합니다.
 
-## Netlify 배포 (GitHub 연결 없이)
+## Netlify 배포
 
 `pickmystars` 폴더에서 진행합니다. `netlify.toml`이 화면 빌드와 Functions 번들링을 설정하고,
 `netlify/functions/photo-email.mjs`가 기존 `/api/photo-email` 주소를 처리합니다.
 기존 로컬 개발 및 Vercel API도 계속 사용할 수 있습니다.
 
 ```sh
-npx netlify-cli login
-npx netlify-cli deploy
+npx netlify login
+npx netlify link
+npx netlify deploy --build
 ```
 
-처음에는 새 Netlify 사이트를 생성하거나, 이미 Drop으로 올린 사이트가 있으면 그 사이트에 연결합니다.
+처음에는 `netlify link`로 기존 사이트에 연결합니다. 새 사이트가 필요한 경우 CLI의 사이트 생성 안내를 따릅니다.
 GitHub 저장소 생성·연결은 필요하지 않습니다. 기본 배포는 확인용 주소를 만듭니다.
 
 Netlify 사이트의 **Project configuration → Environment variables**에
@@ -170,10 +194,12 @@ Firebase를 사용한다면 `VITE_FIREBASE_…` 값도 빌드 환경에 등록�
 키는 소스 코드나 GitHub에 올리지 않습니다. 환경 변수 변경 후 다시 배포합니다.
 
 ```sh
-npx netlify-cli deploy --prod
+git branch --show-current
+git status --short
+npx netlify deploy --build --prod
 ```
 
-이 명령은 앱을 빌드하고 정적 파일과 이메일 함수를 함께 업로드합니다.
+이 명령은 현재 체크아웃한 브랜치의 로컬 파일을 빌드하고 정적 파일과 이메일 함수를 함께 업로드합니다. GitHub main이 자동 선택되지는 않습니다.
 `dist` 폴더만 Netlify Drop에 끌어다 올리면 서버 함수는 배포되지 않으므로 이메일 전송은 작동하지 않습니다.
 Gmail 계정과 앱 비밀번호 설정 후 다른 이메일 주소로 실제 수신 여부를 확인합니다.
 배포 주소에서 카메라 촬영 → 이메일 전송 → 수신 확인을 진행합니다.
@@ -189,6 +215,7 @@ Gmail 계정과 앱 비밀번호 설정 후 다른 이메일 주소로 실제 �
 최신순으로 4개씩 조회하고 페이지를 이동할 수 있습니다.
 글은 Firebase Realtime Database의 `guestbook/{id}` 에 저장되어 모든 기기에서 실시간으로 공유됩니다.
 최근 300개까지 불러오며, 저장이 10초 안에 끝나지 않으면 실패로 안내하고 입력한 글은 유지합니다.
+입력창은 패널의 남는 높이를 채우며 양쪽 하단 안내 문구를 같은 높이로 배치합니다.
 운영자 삭제 화면은 아직 구현하지 않았습니다. 삭제는 Firebase 콘솔에서 해당 글을 지워주세요.
 
 ## Gmail 계정 준비
@@ -205,3 +232,12 @@ Gmail 계정과 앱 비밀번호 설정 후 다른 이메일 주소로 실제 �
 참고: [앱 비밀번호](https://support.google.com/mail/answer/185833),
 [Gmail 발송 제한](https://support.google.com/mail/answer/22839),
 [Nodemailer Gmail 안내](https://nodemailer.com/guides/using-gmail).
+
+## 최근 검증 범위
+
+- 전체 128명 대표 사진의 로컬 HTTP JPEG 응답 확인
+- 브라우저에서 16강 15경기 → 최종 결과 → 포토부스 진입 확인
+- 타입 검사·프로덕션 빌드 및 자동 테스트 28개 통과
+
+위 검증에는 카메라 실촬영과 실제 이메일 발송이 포함되지 않습니다.
+전시용 컴퓨터에서 배포 사이트의 카메라·사진 수신·Firebase 방명록 공유를 별도로 확인합니다.
