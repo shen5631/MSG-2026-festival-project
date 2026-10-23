@@ -1,3 +1,8 @@
+import {
+  photoFilters,
+  getPhotoFilter,
+  type PhotoFilterId,
+} from "../photo/filters";
 import { useEffect, useRef, useState } from "react";
 import { Screen } from "../components/Screen";
 import { useGame } from "../state/GameContext";
@@ -19,6 +24,11 @@ export function PhotoPage() {
   const booth = usePhotobooth(active);
   const decoration = useStickerSession(booth.shots[0], active);
   const [stripPreview, setStripPreview] = useState("");
+  const [filter, setFilter] = useState<PhotoFilterId>("original");
+  const filterStyle = { filter: getPhotoFilter(filter).css };
+  useEffect(() => {
+    if (active) setFilter("original");
+  }, [active]);
   const [frame, setFrame] = useState(
     category === "boy" ? "#b6cdf4" : "#f4bbd5",
   );
@@ -60,6 +70,7 @@ export function PhotoPage() {
       const photo = await booth.makeEmailPhoto(
         frame,
         decoration.state.stickers,
+        filter,
       );
       if (version !== session.current) return;
       const response = await fetch("/api/photo-email", {
@@ -95,7 +106,7 @@ export function PhotoPage() {
     let url: string | undefined;
     setStripPreview("");
     if (complete) {
-      createPhotoStrip(booth.shots, frame)
+      createPhotoStrip(booth.shots, frame, [], filter)
         .then((blob) => {
           if (live) {
             url = URL.createObjectURL(blob);
@@ -110,7 +121,7 @@ export function PhotoPage() {
       live = false;
       if (url) URL.revokeObjectURL(url);
     };
-  }, [complete, booth.shots, frame]);
+  }, [complete, booth.shots, frame, filter]);
   const ready = booth.status === "ready";
   const primaryLabel =
     booth.status === "requesting"
@@ -138,6 +149,7 @@ export function PhotoPage() {
           <div className="camera solo-camera">
             <div className="camera-person">
               <video
+                style={filterStyle}
                 ref={booth.videoRef}
                 autoPlay
                 playsInline
@@ -177,6 +189,7 @@ export function PhotoPage() {
                 {booth.shots[index] ? (
                   <img
                     src={booth.shots[index]}
+                    style={filterStyle}
                     alt={`${index + 1}번째 촬영 사진`}
                   />
                 ) : (
@@ -217,6 +230,35 @@ export function PhotoPage() {
                   onClick={() => setFrame(option.color)}
                 >
                   {frame === option.color ? "✓" : ""}
+                </button>
+              ))}
+            </div>
+            <p id="photo-filter-label">필터</p>
+            <div
+              className="photo-filters"
+              role="group"
+              aria-labelledby="photo-filter-label"
+            >
+              {photoFilters.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  aria-pressed={filter === option.id}
+                  disabled={
+                    booth.shooting ||
+                    emailOpen ||
+                    decoration.expired ||
+                    sent ||
+                    sending
+                  }
+                  onClick={() => setFilter(option.id)}
+                >
+                  <span
+                    className="filter-sample"
+                    style={{ filter: option.css }}
+                    aria-hidden="true"
+                  />
+                  {option.name}
                 </button>
               ))}
             </div>
@@ -283,6 +325,7 @@ export function PhotoPage() {
                         className="solo-strip-slot"
                         alt={`${index + 1}번째 완성 사진`}
                         src={booth.shots[index]}
+                        style={filterStyle}
                       />
                     ) : (
                       <div
@@ -376,6 +419,7 @@ export function PhotoPage() {
         <StickerEditor
           shots={booth.shots}
           frame={frame}
+          filter={filter}
           state={decoration.state}
           dispatch={decoration.dispatch}
           seconds={decoration.seconds}

@@ -1,3 +1,4 @@
+import type { PhotoFilterId } from "../photo/filters";
 import {
   useEffect,
   useRef,
@@ -67,6 +68,7 @@ export function StickerOverlay({ stickers }: { stickers: PlacedSticker[] }) {
 interface EditorProps {
   shots: string[];
   frame: string;
+  filter: PhotoFilterId;
   state: StickerSession;
   dispatch: Dispatch<StickerAction>;
   seconds: number;
@@ -77,6 +79,7 @@ interface EditorProps {
 export function StickerEditor({
   shots,
   frame,
+  filter,
   state,
   dispatch,
   seconds,
@@ -99,7 +102,7 @@ export function StickerEditor({
   useEffect(() => {
     let live = true;
     let url: string | undefined;
-    createPhotoStrip(shots, frame)
+    createPhotoStrip(shots, frame, [], filter)
       .then((blob) => {
         if (live) {
           url = URL.createObjectURL(blob);
@@ -114,7 +117,7 @@ export function StickerEditor({
       live = false;
       if (url) URL.revokeObjectURL(url);
     };
-  }, [shots, frame]);
+  }, [shots, frame, filter]);
   useEffect(() => {
     const previousFocus = document.activeElement as HTMLElement | null;
     const overflow = document.body.style.overflow;

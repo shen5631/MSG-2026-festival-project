@@ -1,3 +1,4 @@
+import type { PhotoFilterId } from "../photo/filters";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { captureSequence } from "../photo/capture";
 import { captureSolo, createPhotoStrip } from "../photo/canvas";
@@ -159,9 +160,10 @@ export function usePhotobooth(active: boolean) {
   const makeEmailPhoto = async (
     color: string,
     stickers: PlacedSticker[] = [],
+    filter: PhotoFilterId = "original",
   ) => {
     if (shots.length !== 4) throw new Error("네 장의 촬영을 완료해주세요.");
-    const blob = await createPhotoStrip(shots, color, stickers);
+    const blob = await createPhotoStrip(shots, color, stickers, filter);
     const bitmap = await createImageBitmap(blob);
     try {
       const canvas = document.createElement("canvas");

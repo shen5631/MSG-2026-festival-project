@@ -1,3 +1,4 @@
+import { filterPixels, type PhotoFilterId } from "./filters.ts";
 import {
   findSticker,
   getStickerSheet,
@@ -73,6 +74,7 @@ export async function createPhotoStrip(
   shots: string[],
   color: string,
   stickers: PlacedSticker[] = [],
+  filter: PhotoFilterId = "original",
 ): Promise<Blob> {
   if (shots.length !== 4) throw new Error("네 장의 촬영을 완료해주세요.");
   const images = await Promise.all(shots.map(loadImage));
@@ -87,9 +89,28 @@ export async function createPhotoStrip(
   context.font = "bold 30px sans-serif";
   context.textAlign = "center";
   context.fillText("P!ck My St☆r", 640, 47);
-  images.forEach((image, index) =>
-    context.drawImage(image, 40, 72 + index * 824, 1200, 800),
-  );
+  // 사진만 보정하고 프레임·문구·스티커의 원래 색은 유지합니다.
+  const photoCanvas =
+    filter === "original" ? null : document.createElement("canvas");
+  if (photoCanvas) {
+    photoCanvas.width = 1200;
+    photoCanvas.height = 800;
+  }
+  const photoContext = photoCanvas?.getContext("2d", {
+    willReadFrequently: true,
+  });
+  if (photoCanvas && !photoContext)
+    throw new Error("필터를 적용할 수 없습니다.");
+  images.forEach((image, index) => {
+    if (photoCanvas && photoContext) {
+      photoContext.clearRect(0, 0, 1200, 800);
+      photoContext.drawImage(image, 0, 0, 1200, 800);
+      const pixels = photoContext.getImageData(0, 0, 1200, 800);
+      filterPixels(pixels.data, filter);
+      photoContext.putImageData(pixels, 0, 0);
+    }
+    context.drawImage(photoCanvas ?? image, 40, 72 + index * 824, 1200, 800);
+  });
   context.font = "28px sans-serif";
   context.fillText("나만의 네컷", 640, canvas.height - 36, 1160);
   if (stickers.length) {

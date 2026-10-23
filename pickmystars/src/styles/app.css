@@ -2634,3 +2634,78 @@ button,
     padding: 4px;
   }
 }
+
+#photo .photo-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 18px;
+}
+#photo .photo-filters button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 4px;
+  border: 2px solid #eddae5;
+  border-radius: 12px;
+  background: #fff;
+  color: #78435e;
+  font: inherit;
+  font-size: 11px;
+  white-space: nowrap;
+  min-width: 0;
+  margin-bottom: 0;
+  cursor: pointer;
+  transition:
+    border-color 160ms,
+    background-color 160ms;
+}
+#photo .photo-filters button[aria-pressed="true"] {
+  border-color: #d85d98;
+  background: #fff0f7;
+  font-weight: 700;
+}
+#photo .photo-filters button:focus-visible {
+  outline: 3px solid #bdddf2;
+  outline-offset: 2px;
+}
+#photo .photo-filters button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.filter-sample {
+  width: 100%;
+  max-width: 52px;
+  aspect-ratio: 1.3;
+  border-radius: 7px;
+  background:
+    radial-gradient(circle at 65% 28%, #ffe694 0 15%, transparent 16%),
+    linear-gradient(150deg, #bdddf2 45%, #d895ae 46% 70%, #87ac94 71%);
+}
+
+/* 양쪽 패널의 마지막 안내와 촬영 후 버튼을 같은 하단 행에 맞춥니다. */
+#photo .camera-panel {
+  display: flex;
+  flex-direction: column;
+}
+#photo .camera-panel > * {
+  flex-shrink: 0;
+}
+#photo .camera-panel .shot-thumbnails {
+  margin-bottom: 16px;
+}
+#photo .camera-panel .camera-status {
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  margin: auto 0 0;
+}
+#photo .booth-actions button {
+  min-height: 46px;
+}
+@media (max-width: 850px) {
+  #photo .camera-panel .camera-status {
+    min-height: 0;
+  }
+}
