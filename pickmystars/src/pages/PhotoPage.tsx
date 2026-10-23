@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Screen } from "../components/Screen";
 import { useGame } from "../state/GameContext";
+import { StickerEditor, StickerOverlay } from "../components/StickerEditor";
+import { useStickerSession } from "../hooks/useStickerSession";
+import { createPhotoStrip } from "../photo/canvas";
 import { usePhotobooth } from "../hooks/usePhotobooth";
 
 const frames = [
@@ -14,6 +17,8 @@ export function PhotoPage() {
   const { winner, navigate, activeScreen, category } = useGame();
   const active = activeScreen === "photo";
   const booth = usePhotobooth(active);
+  const decoration = useStickerSession(booth.shots[0], active);
+  const [stripPreview, setStripPreview] = useState("");
   const [frame, setFrame] = useState(
     category === "boy" ? "#b6cdf4" : "#f4bbd5",
   );
@@ -52,7 +57,10 @@ export function PhotoPage() {
     setSending(true);
     setMailError("");
     try {
-      const photo = await booth.makeEmailPhoto(frame);
+      const photo = await booth.makeEmailPhoto(
+        frame,
+        decoration.state.stickers,
+      );
       if (version !== session.current) return;
       const response = await fetch("/api/photo-email", {
         method: "POST",
@@ -82,6 +90,27 @@ export function PhotoPage() {
     }
   };
   const complete = booth.shots.length === 4 && !booth.shooting;
+  useEffect(() => {
+    let live = true;
+    let url: string | undefined;
+    setStripPreview("");
+    if (complete) {
+      createPhotoStrip(booth.shots, frame)
+        .then((blob) => {
+          if (live) {
+            url = URL.createObjectURL(blob);
+            setStripPreview(url);
+          }
+        })
+        .catch(() => {
+          /* 편집 또는 전송 시 오류를 다시 안내합니다. */
+        });
+    }
+    return () => {
+      live = false;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [complete, booth.shots, frame]);
   const ready = booth.status === "ready";
   const primaryLabel =
     booth.status === "requesting"
@@ -159,7 +188,7 @@ export function PhotoPage() {
           <p className="camera-status" role={booth.error ? "alert" : "status"}>
             {booth.error ||
               (complete
-                ? "네 장을 모두 찍었어요. 프레임을 고른 뒤 이메일로 받아보세요."
+                ? "네 장을 모두 찍었어요. 스티커로 꾸미거나 바로 이메일로 받아보세요."
                 : "촬영 화면을 나가면 카메라가 꺼집니다. 이메일 전송 시 완성 사진을 전송합니다.")}
           </p>
         </div>
@@ -178,7 +207,13 @@ export function PhotoPage() {
                   style={{ background: option.color }}
                   aria-label={`${option.name} 프레임`}
                   aria-pressed={frame === option.color}
-                  disabled={booth.shooting || emailOpen}
+                  disabled={
+                    booth.shooting ||
+                    emailOpen ||
+                    decoration.expired ||
+                    sent ||
+                    sending
+                  }
                   onClick={() => setFrame(option.color)}
                 >
                   {frame === option.color ? "✓" : ""}
@@ -209,27 +244,57 @@ export function PhotoPage() {
             >
               {primaryLabel}
             </button>
+            <button
+              className="secondary wide sticker-open"
+              disabled={!complete || emailOpen || sending || sent}
+              onClick={decoration.open}
+            >
+              {decoration.expired ? "완성한 꾸미기 보기" : "스티커 꾸미기"}
+            </button>
+            <p className="sticker-entry-note">
+              {decoration.state.deadline === null
+                ? "꾸미기를 시작하면 180초 동안 편집할 수 있어요."
+                : decoration.expired
+                  ? "꾸미기 시간이 끝났어요. 이메일로 받아보세요."
+                  : `꾸미기 남은 시간 ${Math.floor(decoration.seconds / 60)}:${String(decoration.seconds % 60).padStart(2, "0")}`}
+            </p>
           </div>
           <div className="strip-preview">
             <p>완성 미리보기</p>
-            <div className="photo-strip" style={{ background: frame }}>
-              {[0, 1, 2, 3].map((index) =>
-                booth.shots[index] ? (
+            <div
+              className={`photo-strip${stripPreview ? " decorated-strip" : ""}`}
+              style={{ background: frame }}
+            >
+              {stripPreview ? (
+                <>
                   <img
-                    key={index}
-                    className="solo-strip-slot"
-                    alt={`${index + 1}번째 완성 사진`}
-                    src={booth.shots[index]}
+                    className="strip-composite"
+                    src={stripPreview}
+                    alt="완성 네컷 사진"
                   />
-                ) : (
-                  <div
-                    key={index}
-                    className="solo-strip-slot solo-strip-empty"
-                    aria-label={`${index + 1}번째 촬영 대기`}
-                  >
-                    {index + 1}
-                  </div>
-                ),
+                  <StickerOverlay stickers={decoration.state.stickers} />
+                </>
+              ) : (
+                <>
+                  {[0, 1, 2, 3].map((index) =>
+                    booth.shots[index] ? (
+                      <img
+                        key={index}
+                        className="solo-strip-slot"
+                        alt={`${index + 1}번째 완성 사진`}
+                        src={booth.shots[index]}
+                      />
+                    ) : (
+                      <div
+                        key={index}
+                        className="solo-strip-slot solo-strip-empty"
+                        aria-label={`${index + 1}번째 촬영 대기`}
+                      >
+                        {index + 1}
+                      </div>
+                    ),
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -307,6 +372,17 @@ export function PhotoPage() {
           )}
         </div>
       </div>
+      {decoration.state.open && complete && (
+        <StickerEditor
+          shots={booth.shots}
+          frame={frame}
+          state={decoration.state}
+          dispatch={decoration.dispatch}
+          seconds={decoration.seconds}
+          expired={decoration.expired}
+          onClose={decoration.close}
+        />
+      )}
       <button
         className="guestbook-photo-link"
         onClick={() => navigate("guestbook")}

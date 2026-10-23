@@ -1,3 +1,10 @@
+import {
+  findSticker,
+  getStickerSheet,
+  STRIP_WIDTH,
+  STRIP_HEIGHT,
+  type PlacedSticker,
+} from "./stickers.ts";
 import { coverRect } from "./capture.ts";
 
 export async function loadImage(source: string): Promise<HTMLImageElement> {
@@ -65,12 +72,13 @@ export function captureSolo(video: HTMLVideoElement): string {
 export async function createPhotoStrip(
   shots: string[],
   color: string,
+  stickers: PlacedSticker[] = [],
 ): Promise<Blob> {
   if (shots.length !== 4) throw new Error("네 장의 촬영을 완료해주세요.");
   const images = await Promise.all(shots.map(loadImage));
   const canvas = document.createElement("canvas");
-  canvas.width = 1280;
-  canvas.height = 72 + 4 * 800 + 3 * 24 + 90;
+  canvas.width = STRIP_WIDTH;
+  canvas.height = STRIP_HEIGHT;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("사진을 저장할 수 없습니다.");
   context.fillStyle = color;
@@ -84,6 +92,46 @@ export async function createPhotoStrip(
   );
   context.font = "28px sans-serif";
   context.fillText("나만의 네컷", 640, canvas.height - 36, 1160);
+  if (stickers.length) {
+    const files = [
+      ...new Set(
+        stickers.map((sticker) => getStickerSheet(sticker.stickerId).file),
+      ),
+    ];
+    const atlases = new Map(
+      await Promise.all(
+        files.map(
+          async (file) =>
+            [
+              file,
+              await loadImage(
+                `${import.meta.env?.BASE_URL ?? "/"}assets/${file}`,
+              ),
+            ] as const,
+        ),
+      ),
+    );
+    for (const sticker of stickers) {
+      const { rect } = findSticker(sticker.stickerId);
+      const width = sticker.width * STRIP_WIDTH;
+      const height = (width * rect[3]) / rect[2];
+      context.save();
+      context.translate(sticker.x * STRIP_WIDTH, sticker.y * STRIP_HEIGHT);
+      context.rotate((sticker.rotation * Math.PI) / 180);
+      context.drawImage(
+        atlases.get(getStickerSheet(sticker.stickerId).file)!,
+        rect[0],
+        rect[1],
+        rect[2],
+        rect[3],
+        -width / 2,
+        -height / 2,
+        width,
+        height,
+      );
+      context.restore();
+    }
+  }
   return new Promise((resolve, reject) =>
     canvas.toBlob((blob) => {
       if (blob) resolve(blob);

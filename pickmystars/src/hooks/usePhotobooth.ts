@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { captureSequence } from "../photo/capture";
 import { captureSolo, createPhotoStrip } from "../photo/canvas";
 
+import type { PlacedSticker } from "../photo/stickers";
+
 type CameraStatus = "idle" | "requesting" | "ready" | "error";
 
 function cameraError(error: unknown): string {
@@ -154,9 +156,12 @@ export function usePhotobooth(active: boolean) {
     setCountdown(null);
   };
 
-  const makeEmailPhoto = async (color: string) => {
+  const makeEmailPhoto = async (
+    color: string,
+    stickers: PlacedSticker[] = [],
+  ) => {
     if (shots.length !== 4) throw new Error("네 장의 촬영을 완료해주세요.");
-    const blob = await createPhotoStrip(shots, color);
+    const blob = await createPhotoStrip(shots, color, stickers);
     const bitmap = await createImageBitmap(blob);
     try {
       const canvas = document.createElement("canvas");
