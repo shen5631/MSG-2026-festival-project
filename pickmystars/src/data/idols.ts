@@ -13,6 +13,28 @@ export interface Idol {
 export const asset = (filename: string) =>
   `${import.meta.env.BASE_URL}assets/${filename}`;
 
+// 교체한 사진은 운영체제별 한글 파일명 차이를 피하도록 영문 경로를 사용합니다.
+const portraitFiles: Record<string, string> = {
+  지우: "jiwoo",
+  마키: "maki",
+  마유카: "mayuka",
+  민니: "minnie",
+  민주_아일릿: "minju-illit",
+  사쿠야: "sakuya",
+  설윤: "sullyoon",
+  슈화: "shuhua",
+  신정환: "shinyu",
+  아사: "asa",
+  아이린: "irene",
+  아현: "ahyeon",
+  안유진: "an-yujin",
+  양정원: "jungwon",
+  예온: "yeon",
+  오해원: "haewon",
+  우기: "yuqi",
+  윈터: "winter",
+};
+
 // 이미지는 public/assets/idols/ 에 "이름.jpg"(대표), "이름_우승사진.jpg"(우승 사진)로 저장합니다.
 const portrait = (
   id: string,
@@ -23,7 +45,7 @@ const portrait = (
   id,
   name,
   group,
-  image: asset(`idols/${file}.jpg`),
+  image: asset(`idols/${portraitFiles[file] ?? file}.jpg`),
   photo: asset(`idols/${file}_우승사진.jpg`),
 });
 
