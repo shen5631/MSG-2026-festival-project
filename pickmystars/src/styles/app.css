@@ -402,7 +402,7 @@ footer {
 }
 .photo.pair,
 .photo.portrait {
-  background: none !important;
+  background: none;
   display: flex;
   overflow: hidden;
 }
@@ -590,7 +590,7 @@ body {
   min-height: 0;
   padding: 0;
   overflow: hidden;
-  background: none !important;
+  background: none;
 }
 .design-canvas {
   position: absolute;
@@ -2708,4 +2708,44 @@ button,
   #photo .camera-panel .camera-status {
     min-height: 0;
   }
+}
+
+/* 본문과 푸터가 하나의 도트 배경을 공유합니다. */
+#stage {
+  --site-footer-height: 80px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.design-canvas {
+  flex: 1;
+  min-height: calc(100svh - var(--site-footer-height, 80px));
+}
+#stage .design-canvas .screen {
+  min-height: calc(100svh - var(--site-footer-height, 80px));
+  background: transparent !important;
+}
+.site-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  padding: 18px 20px;
+  flex-shrink: 0;
+  background: transparent;
+  color: #795163;
+  text-align: center;
+  font-size: 12px;
+  line-height: 22px;
+}
+.site-footer span {
+  display: block;
+}
+
+#stage:not([data-screen]) {
+  --site-footer-height: 0px;
 }

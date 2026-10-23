@@ -112,7 +112,12 @@ export async function createPhotoStrip(
     context.drawImage(photoCanvas ?? image, 40, 72 + index * 824, 1200, 800);
   });
   context.font = "28px sans-serif";
-  context.fillText("나만의 네컷", 640, canvas.height - 36, 1160);
+  context.fillText(
+    "2026 청아즐 - 미림마이스터고 MSG",
+    640,
+    canvas.height - 36,
+    1160,
+  );
   if (stickers.length) {
     const files = [
       ...new Set(
