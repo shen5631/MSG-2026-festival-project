@@ -1,13 +1,32 @@
 /* 기본 스타일과 화면별 스타일입니다. 뒤쪽 반응형·상태 규칙이 앞쪽 설정을 덮어쓰므로 순서를 유지합니다. */
 
+@font-face {
+  font-family: "NeoDonggeunmo";
+  src: url("/assets/fonts/neo-donggeunmo.woff") format("woff");
+  font-weight: normal;
+  font-display: swap;
+  font-style: normal;
+}
+
 * {
   box-sizing: border-box;
 }
 body {
   margin: 0;
   color: #542734;
-  font-family: Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-family:
+    "NeoDonggeunmo", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-weight: 400;
+  font-style: normal;
   background: #fffcf4;
+}
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: inherit;
 }
 button {
   font: inherit;
@@ -1894,7 +1913,7 @@ button,
 /* 방명록: 기존 화면은 유지하고 이 화면 안에서만 스타일을 적용합니다. */
 #guestbook {
   padding: 58px 4.5vw 48px;
-  color: #650b2c;
+  color: var(--guestbook-ink);
   text-align: left;
   position: relative;
 }
@@ -2748,4 +2767,282 @@ button,
 
 #stage:not([data-screen]) {
   --site-footer-height: 0px;
+}
+
+/* 레퍼런스의 3색 팔레트: 각 테마의 UI에서 공통으로 사용합니다. */
+:root {
+  --guestbook-ink: #650b2c;
+  --pink-primary: #ff4283;
+  --pink-secondary: #ff9bbd;
+  --pink-surface: #ffedf4;
+  --blue-primary: #5489cc;
+  --blue-secondary: #acc9ed;
+  --blue-surface: #dfebfa;
+}
+#stage {
+  --accent: var(--pink-primary);
+  --group: var(--pink-secondary);
+  --theme-secondary: var(--pink-secondary);
+  --theme-surface: var(--pink-surface);
+}
+#stage[data-theme="boy"] {
+  --accent: var(--blue-primary);
+  --group: var(--blue-secondary);
+  --theme-secondary: var(--blue-secondary);
+  --theme-surface: var(--blue-surface);
+}
+#home .category {
+  --selection-color: var(--pink-primary);
+  --selection-shadow: transparent;
+  border-color: var(--pink-secondary);
+}
+#home .category.boy {
+  --selection-color: var(--blue-primary);
+  border-color: var(--blue-secondary);
+}
+#home .category .card-label {
+  color: var(--pink-primary);
+  background: var(--pink-surface);
+}
+#home .category.boy .card-label {
+  color: var(--blue-primary);
+  background: var(--blue-surface);
+}
+#home .category .card-label small {
+  color: var(--pink-secondary);
+}
+#home .category.boy .card-label small {
+  color: var(--blue-secondary);
+}
+#play > div:first-of-type span {
+  color: var(--theme-secondary);
+  opacity: 1;
+}
+#play .progress {
+  height: 14px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: #fff;
+  margin: 10px 0 30px;
+}
+#play .progress::before {
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+}
+#play .idol,
+#play .idol:last-child {
+  padding: 12px 12px 0;
+  border: 1px solid #fff;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: none;
+}
+#play .idol:hover,
+#play .idol:focus-visible,
+#play .idol.picked {
+  border-color: var(--accent);
+  box-shadow: none;
+}
+#play .idol:focus-visible {
+  outline: 2px solid var(--theme-secondary);
+  outline-offset: 4px;
+}
+#play .idol .photo {
+  border-radius: 9px;
+}
+#play .card-label {
+  padding: 18px 6px 20px;
+  text-align: left;
+  color: var(--accent);
+  background: #fff;
+}
+#play .card-label small {
+  color: var(--theme-secondary);
+}
+#play .vs {
+  color: var(--accent);
+}
+#result,
+#result[data-theme="boy"] {
+  --result-accent: var(--accent);
+  --result-dark: var(--accent);
+  --result-soft: var(--theme-surface);
+}
+#result .idol,
+#result .winner-heading {
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: #fff;
+}
+#result .idol {
+  padding: 12px 12px 0;
+}
+#result .idol .photo {
+  border-radius: 9px;
+}
+#result .card-label,
+#result h1 {
+  color: var(--accent);
+}
+#result .card-label small,
+#result .winner-group {
+  color: var(--theme-secondary);
+}
+#result h1 strong {
+  color: var(--theme-secondary);
+}
+#result .result-details {
+  padding-top: 0;
+}
+#result .winner-heading {
+  min-height: 0;
+  padding: 28px;
+}
+#result .winner-message {
+  height: auto;
+  border-radius: 12px;
+  background: var(--theme-surface);
+  color: var(--accent);
+  padding: 24px 28px;
+}
+#result .actions {
+  margin-left: 0;
+  margin-right: 0;
+}
+#result .actions .primary {
+  color: #fff;
+  background: var(--theme-secondary);
+  border-color: var(--theme-secondary);
+}
+#result .actions .secondary {
+  color: var(--accent);
+  background: #fff;
+  border-color: var(--accent);
+}
+#photo,
+#stage[data-theme="boy"] #photo {
+  --booth-soft: var(--theme-surface);
+  --booth-line: var(--theme-secondary);
+  --booth-ink: var(--theme-secondary);
+}
+#photo h2,
+#photo .email-form input {
+  color: var(--accent);
+}
+#photo .settings-body h3,
+#photo .photo-filters button,
+#photo .camera-status {
+  color: var(--theme-secondary);
+}
+#photo .photo-filters button {
+  border-color: var(--theme-secondary);
+  background: #fff;
+}
+#photo .photo-filters button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--theme-surface);
+}
+#photo .photo-filters button:focus-visible {
+  outline-color: var(--theme-secondary);
+}
+#stage[data-screen] .site-footer {
+  color: var(--accent);
+}
+@media (max-width: 700px) {
+  #play .idol,
+  #play .idol:last-child {
+    padding: 7px 7px 0;
+  }
+  #play .card-label {
+    padding: 14px 4px;
+  }
+}
+
+/* 가로 화면에서도 사진을 세로 카드에 가깝게 유지합니다. */
+#play .matches {
+  width: min(100%, 820px);
+  grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr);
+  gap: 24px;
+}
+#play .idol .photo {
+  height: clamp(280px, 50vh, 470px);
+}
+@media (max-width: 700px) {
+  #play .matches {
+    grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr);
+    gap: 8px;
+  }
+  #play .idol .photo {
+    height: clamp(210px, 37vh, 340px);
+  }
+}
+
+/* 포토부스: 강한 색은 주요 동작·선택에, 보조색은 안내와 경계에 사용합니다. */
+#photo .camera-panel,
+#photo .booth-settings,
+#photo .email-form {
+  border: 1px solid var(--theme-secondary);
+}
+#photo h2 em,
+#photo .intro,
+#photo .back,
+#photo .camera-panel > p,
+#photo .strip-preview > p,
+#photo .settings-body > p,
+#photo .camera-person strong,
+#photo .camera-person small,
+#photo .camera-badge,
+#photo .shot-thumbnails div,
+#photo .solo-strip-empty {
+  color: var(--theme-secondary);
+}
+#photo .camera-person small {
+  opacity: 1;
+}
+#photo .settings-body h3,
+#photo .settings-body > p {
+  font-weight: normal;
+}
+#photo .shot-thumbnails div:first-child {
+  border: 1px solid var(--theme-secondary);
+}
+#photo .photo-filters button {
+  border-width: 1px;
+}
+#photo .photo-filters button[aria-pressed="true"] {
+  color: var(--accent);
+}
+#photo .timer-preview button {
+  color: var(--theme-secondary);
+}
+#photo .timer-preview button[aria-pressed="true"] {
+  background: var(--theme-secondary);
+  color: #fff;
+}
+#photo .secondary {
+  border-color: var(--theme-secondary);
+  color: var(--theme-secondary);
+}
+#photo .primary:disabled {
+  border-color: var(--theme-secondary);
+  background: var(--theme-secondary);
+}
+#photo .settings-body > .sticker-entry-note {
+  color: var(--theme-secondary);
+  font-weight: normal;
+}
+#stage[data-screen="photo"] .site-footer {
+  color: var(--theme-secondary);
+}
+/* 구역 제목은 또렷하게 두고, 설명 문장은 연한 색으로 구분합니다. */
+#photo .camera-panel > p:first-child,
+#photo .settings-body h3,
+#photo .settings-body > p:not(.solo-photo-guide):not(.sticker-entry-note),
+#photo .camera-person strong {
+  color: var(--accent);
+}
+
+#stage[data-screen="guestbook"] .site-footer {
+  color: var(--guestbook-ink);
 }

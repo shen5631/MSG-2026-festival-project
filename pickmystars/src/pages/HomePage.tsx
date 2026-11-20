@@ -16,7 +16,7 @@ export function HomePage() {
     <Screen id="home">
       <img
         className="logo"
-        src={asset("title.png")}
+        src={asset("title-text-only.png")}
         alt="당신의 최애를 골라보세요"
       />
       <p className="intro">

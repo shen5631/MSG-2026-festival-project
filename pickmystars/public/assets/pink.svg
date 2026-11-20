@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="2560" height="1600" viewBox="0 0 1600 1000">
-<defs><radialGradient id="soft" cx="50%" cy="42%" r="65%"><stop offset="0" stop-color="white" stop-opacity=".24"/><stop offset=".28" stop-color="white" stop-opacity=".34"/><stop offset=".7" stop-color="white" stop-opacity=".78"/><stop offset="1" stop-color="white"/></radialGradient><mask id="fade"><rect width="1600" height="1000" fill="url(#soft)"/></mask><linearGradient id="wash" x2="0" y2="1"><stop stop-color="#fff9fc"/><stop offset="1" stop-color="#eba3c7" stop-opacity=".12"/></linearGradient></defs>
-<rect width="1600" height="1000" fill="#fff9fc"/>
+<defs><radialGradient id="soft" cx="50%" cy="42%" r="65%"><stop offset="0" stop-color="white" stop-opacity=".24"/><stop offset=".28" stop-color="white" stop-opacity=".34"/><stop offset=".7" stop-color="white" stop-opacity=".78"/><stop offset="1" stop-color="white"/></radialGradient><mask id="fade"><rect width="1600" height="1000" fill="url(#soft)"/></mask><linearGradient id="wash" x2="0" y2="1"><stop stop-color="#ffedf4"/><stop offset="1" stop-color="#ff9bbd" stop-opacity=".12"/></linearGradient></defs>
+<rect width="1600" height="1000" fill="#ffedf4"/>
 <rect width="1600" height="1000" fill="url(#wash)"/>
-<g fill="#eba3c7" mask="url(#fade)">
+<g fill="#ff9bbd" mask="url(#fade)">
 <circle cx="-24" cy="-12" r="0.70"/>
 <circle cx="0" cy="-12" r="0.70"/>
 <circle cx="24" cy="-12" r="0.70"/>

@@ -246,7 +246,7 @@ function AppRoutes() {
         </div>
         {activeScreen !== "home" && (
           <footer className="site-footer">
-            <span>2026 청아즐</span>
+            <span>2026 동아리 발표</span>
             <span>미림마이스터고등학교 · MSG</span>
           </footer>
         )}
