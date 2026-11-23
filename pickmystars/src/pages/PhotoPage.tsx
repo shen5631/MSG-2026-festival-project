@@ -9,6 +9,7 @@ import { useGame } from "../state/GameContext";
 import { StickerEditor, StickerOverlay } from "../components/StickerEditor";
 import { useStickerSession } from "../hooks/useStickerSession";
 import { createPhotoStrip } from "../photo/canvas";
+import { getCompanionParticle } from "../data/idols";
 import { usePhotobooth } from "../hooks/usePhotobooth";
 
 const frames = [
@@ -20,8 +21,11 @@ const frames = [
 
 export function PhotoPage() {
   const { winner, navigate, activeScreen, category } = useGame();
+  const companion = `${winner.name}${getCompanionParticle(winner.name)}`;
   const active = activeScreen === "photo";
-  const booth = usePhotobooth(active);
+  const [mode, setMode] = useState<"idol" | "solo">("idol");
+  const withIdol = mode === "idol";
+  const booth = usePhotobooth(active, withIdol ? winner.image : undefined);
   const decoration = useStickerSession(booth.shots[0], active);
   const [stripPreview, setStripPreview] = useState("");
   const [filter, setFilter] = useState<PhotoFilterId>("original");
@@ -56,7 +60,7 @@ export function PhotoPage() {
       session.current++;
       request.current?.abort();
     };
-  }, [active, winner.id]);
+  }, [active, winner.id, mode]);
   const sendEmail = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (sendLock.current || sent) return;
@@ -140,13 +144,17 @@ export function PhotoPage() {
         ← 결과로 돌아가기
       </button>
       <h2>
-        나만의 네컷 <em>찰칵!</em>
+        {withIdol ? "최애와 네컷" : "나만의 네컷"} <em>찰칵!</em>
       </h2>
-      <p className="intro">오늘의 나를 네컷으로 남겨보세요</p>
+      <p className="intro">
+        {withIdol
+          ? `${companion} 함께하는 순간을 네컷으로 남겨보세요`
+          : "오늘의 나를 네컷으로 남겨보세요"}
+      </p>
       <div className="booth-layout">
         <div className="camera-panel">
           <p>카메라 미리보기</p>
-          <div className="camera solo-camera">
+          <div className={`camera ${withIdol ? "duo-camera" : "solo-camera"}`}>
             <div className="camera-person">
               <video
                 style={filterStyle}
@@ -171,13 +179,25 @@ export function PhotoPage() {
                 </div>
               )}
             </div>
+            {withIdol && (
+              <img
+                className="camera-idol"
+                src={winner.image}
+                alt={`${companion} 함께 촬영`}
+                style={filterStyle}
+              />
+            )}
             {booth.countdown !== null && (
               <div className="camera-countdown" aria-live="assertive">
                 {booth.countdown}
               </div>
             )}
             <span className="camera-badge">
-              {complete ? "촬영 완료! 이메일로 받아보세요" : "나만의 네컷"}
+              {complete
+                ? "촬영 완료! 이메일로 받아보세요"
+                : withIdol
+                  ? `${companion} 함께하는 네컷`
+                  : "나만의 네컷"}
             </span>
           </div>
           <p className="shot-count" aria-live="polite">
@@ -208,8 +228,35 @@ export function PhotoPage() {
         <div className="booth-settings">
           <div className="settings-body">
             <h3>나만의 포토부스</h3>
-            <p className="solo-photo-guide">
-              편하게 포즈를 취하고 나만의 네컷을 남겨보세요.
+            <p id="photo-mode-label">촬영 방식</p>
+            <div
+              className="timer-preview"
+              role="group"
+              aria-labelledby="photo-mode-label"
+            >
+              {(
+                [
+                  { id: "idol", label: "최애와 찍기" },
+                  { id: "solo", label: "혼자 찍기" },
+                ] as const
+              ).map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  aria-pressed={mode === option.id}
+                  disabled={booth.shooting || sending || emailOpen}
+                  onClick={() => {
+                    if (mode === option.id) return;
+                    booth.retake();
+                    setMode(option.id);
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <p className="photo-mode-note">
+              촬영 방식을 바꾸면 사진과 꾸미기가 초기화돼요.
             </p>
             <p>프레임 색상</p>
             <div className="swatches">

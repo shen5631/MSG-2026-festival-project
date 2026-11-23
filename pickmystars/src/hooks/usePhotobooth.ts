@@ -1,7 +1,12 @@
 import type { PhotoFilterId } from "../photo/filters";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { captureSequence } from "../photo/capture";
-import { captureSolo, createPhotoStrip } from "../photo/canvas";
+import {
+  captureSolo,
+  captureWithIdol,
+  createPhotoStrip,
+  loadImage,
+} from "../photo/canvas";
 
 import type { PlacedSticker } from "../photo/stickers";
 
@@ -21,7 +26,7 @@ function cameraError(error: unknown): string {
     : "카메라 연결에 실패했어요. 다시 시도해주세요.";
 }
 
-export function usePhotobooth(active: boolean) {
+export function usePhotobooth(active: boolean, idolImage?: string) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const requestVersion = useRef(0);
@@ -123,6 +128,13 @@ export function usePhotobooth(active: boolean) {
     setShots([]);
     setError("");
     try {
+      const idol = idolImage
+        ? await loadImage(idolImage).catch(() => {
+            throw new Error(
+              "최애 사진을 불러오지 못했어요. 사진을 확인한 뒤 다시 촬영해주세요.",
+            );
+          })
+        : null;
       controller.signal.throwIfAborted();
       await captureSequence({
         seconds,
@@ -131,7 +143,9 @@ export function usePhotobooth(active: boolean) {
         capture: () => {
           if (!videoRef.current)
             throw new Error("카메라 화면을 찾을 수 없습니다.");
-          return captureSolo(videoRef.current);
+          return idol
+            ? captureWithIdol(videoRef.current, idol)
+            : captureSolo(videoRef.current);
         },
         onShot: (shot) => setShots((previous) => [...previous, shot]),
       });

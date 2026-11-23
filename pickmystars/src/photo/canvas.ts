@@ -70,6 +70,50 @@ export function captureSolo(video: HTMLVideoElement): string {
   return canvas.toDataURL("image/jpeg", 0.94);
 }
 
+// 미리보기와 동일하게 왼쪽은 거울 카메라, 오른쪽은 최애 사진입니다.
+export function captureWithIdol(
+  video: HTMLVideoElement,
+  idol: HTMLImageElement,
+): string {
+  if (video.readyState < 2 || !video.videoWidth || !video.videoHeight) {
+    throw new Error("카메라가 준비되지 않았습니다. 잠시 후 다시 촬영해주세요.");
+  }
+  if (!idol.naturalWidth || !idol.naturalHeight) {
+    throw new Error(
+      "최애 사진을 불러오지 못했어요. 잠시 후 다시 촬영해주세요.",
+    );
+  }
+  const canvas = document.createElement("canvas");
+  canvas.width = 1200;
+  canvas.height = 800;
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("사진을 만들 수 없습니다.");
+  drawCover(
+    context,
+    video,
+    video.videoWidth,
+    video.videoHeight,
+    0,
+    0,
+    600,
+    800,
+    true,
+  );
+  drawCover(
+    context,
+    idol,
+    idol.naturalWidth,
+    idol.naturalHeight,
+    600,
+    0,
+    600,
+    800,
+    false,
+    0.25,
+  );
+  return canvas.toDataURL("image/jpeg", 0.94);
+}
+
 export async function createPhotoStrip(
   shots: string[],
   color: string,
