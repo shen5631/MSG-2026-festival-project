@@ -29,12 +29,12 @@ export function ResultPage() {
             당신의 이상형 월드컵의 우승자!
             <br />
             <span className="winner-invite">
-              오늘의 나를 네컷 사진으로 남겨보세요
+              최애와 함께 또는 혼자 네컷 사진을 남겨보세요
             </span>
           </div>
           <div className="actions">
             <button className="primary" onClick={() => navigate("photo")}>
-              나만의 네컷 찍기
+              네컷 찍기
             </button>
             <button className="secondary" onClick={() => navigate("home")}>
               다시하기

@@ -1,8 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { captureSolo, createPhotoStrip } from "../src/photo/canvas.ts";
+import {
+  captureSolo,
+  captureWithIdol,
+  createPhotoStrip,
+} from "../src/photo/canvas.ts";
 
-test("개인 촬영은 카메라만 전체 1200×800에 거울 방향으로 그린다", () => {
+test("함께 촬영은 카메라만 거울 방향으로 왼쪽에, 최애는 오른쪽에 그린다", () => {
   const calls = [];
   const context = {
     save() {},
@@ -21,13 +25,17 @@ test("개인 촬영은 카메라만 전체 1200×800에 거울 방향으로 그�
   globalThis.document = { createElement: () => canvas };
   try {
     const video = { readyState: 2, videoWidth: 1280, videoHeight: 720 };
-    assert.equal(captureSolo(video), "data:image/jpeg;base64,test");
+    const idol = { naturalWidth: 736, naturalHeight: 981 };
+    assert.equal(captureWithIdol(video, idol), "data:image/jpeg;base64,test");
     assert.equal(canvas.width, 1200);
     assert.equal(canvas.height, 800);
     const draws = calls.filter(([name]) => name === "drawImage");
-    assert.equal(draws.length, 1);
+    assert.equal(draws.length, 2);
     assert.equal(draws[0][1], video);
-    assert.deepEqual(draws[0].slice(-4), [0, 0, 1200, 800]);
+    assert.deepEqual(draws[0].slice(-4), [0, 0, 600, 800]);
+    assert.equal(draws[1][1], idol);
+    assert.deepEqual(draws[1].slice(-4), [600, 0, 600, 800]);
+    assert.equal(calls.filter(([name]) => name === "scale").length, 1);
     assert.deepEqual(
       calls.find(([name]) => name === "scale"),
       ["scale", -1, 1],
@@ -37,10 +45,52 @@ test("개인 촬영은 카메라만 전체 1200×800에 거울 방향으로 그�
   }
 });
 
+test("혼자 찍기는 아이돌 없이 전체 화면을 거울 방향으로 저장한다", () => {
+  const calls = [];
+  const context = {
+    save() {},
+    restore() {},
+    translate() {},
+    scale: (...args) => calls.push(["scale", ...args]),
+    drawImage: (...args) => calls.push(["draw", ...args]),
+  };
+  const canvas = { getContext: () => context, toDataURL: () => "solo" };
+  const original = globalThis.document;
+  globalThis.document = { createElement: () => canvas };
+  try {
+    const video = { readyState: 2, videoWidth: 1280, videoHeight: 720 };
+    assert.equal(captureSolo(video), "solo");
+    assert.equal(canvas.width, 1200);
+    assert.equal(canvas.height, 800);
+    assert.deepEqual(
+      calls.filter(([name]) => name === "draw").map((call) => call.slice(-4)),
+      [[0, 0, 1200, 800]],
+    );
+    assert.deepEqual(
+      calls.find(([name]) => name === "scale"),
+      ["scale", -1, 1],
+    );
+    assert.throws(() => captureSolo({ readyState: 1 }), /카메라가 준비되지/);
+  } finally {
+    globalThis.document = original;
+  }
+});
+
 test("준비되지 않은 카메라는 빈 사진을 만들지 않는다", () => {
   assert.throws(
-    () => captureSolo({ readyState: 1, videoWidth: 0, videoHeight: 0 }),
+    () => captureWithIdol({ readyState: 1, videoWidth: 0, videoHeight: 0 }),
     /카메라가 준비되지/,
+  );
+});
+
+test("최애 사진이 준비되지 않으면 촬영을 막는다", () => {
+  assert.throws(
+    () =>
+      captureWithIdol(
+        { readyState: 2, videoWidth: 1280, videoHeight: 720 },
+        { naturalWidth: 0, naturalHeight: 0 },
+      ),
+    /최애 사진을 불러오지/,
   );
 });
 

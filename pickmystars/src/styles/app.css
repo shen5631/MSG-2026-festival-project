@@ -2359,9 +2359,19 @@ button,
   }
 }
 
-/* 개인 촬영 미리보기와 저장 사진의 비율을 일치시킵니다. */
+/* 함께 찍는 미리보기와 저장 사진의 비율을 일치시킵니다. */
 #photo .camera.solo-camera {
   grid-template-columns: 1fr;
+  height: auto;
+  aspect-ratio: 3 / 2;
+}
+#photo .settings-body .photo-mode-note {
+  font-size: 12px;
+  color: var(--theme-secondary);
+  line-height: 1.5;
+}
+#photo .camera.duo-camera {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   height: auto;
   aspect-ratio: 3 / 2;
 }
@@ -2738,6 +2748,11 @@ button,
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+}
+/* 포토부스 내용 높이가 바뀌어도 도트는 브라우저 화면 기준으로 유지합니다. */
+#stage[data-screen="photo"] {
+  background-attachment: fixed;
+  background-position: center top;
 }
 .design-canvas {
   flex: 1;
