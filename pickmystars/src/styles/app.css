@@ -358,67 +358,7 @@ footer {
     transform: none;
   }
 }
-@media (max-width: 650px) {
-  header {
-    height: auto;
-    padding: 12px;
-    flex-direction: column;
-    gap: 6px;
-  }
-  nav button {
-    padding: 8px 10px;
-  }
-  main {
-    padding: 22px 16px 35px;
-  }
-  .logo {
-    height: 140px;
-  }
-  .categories {
-    gap: 12px;
-  }
-  .category {
-    width: 48%;
-  }
-  .photo {
-    height: 130px;
-    background-size: 330% auto;
-  }
-  .matches {
-    gap: 12px;
-  }
-  .idol {
-    width: 44%;
-  }
-  .idol .photo {
-    height: 230px;
-    background-size: 500% auto;
-  }
-  .vs {
-    font-size: 22px;
-  }
-  .result {
-    gap: 22px;
-    flex-direction: column;
-    text-align: center;
-  }
-  .result .idol {
-    width: 230px;
-  }
-  .result h1 {
-    font-size: 25px;
-  }
-  .booth {
-    grid-template-columns: 1fr;
-    padding: 18px;
-  }
-  .camera {
-    height: 240px;
-  }
-  .actions {
-    flex-wrap: wrap;
-  }
-}
+
 .photo.pair,
 .photo.portrait {
   background: none;
@@ -441,11 +381,6 @@ footer {
 }
 .photo.pair {
   height: 180px;
-}
-@media (max-width: 650px) {
-  .photo.pair {
-    height: 130px;
-  }
 }
 
 /* 피그마 결과 화면: 왼쪽 포토카드 / 오른쪽 우승 안내 */
@@ -513,7 +448,7 @@ footer {
 
 #result h1 {
   margin: 0;
-  font-size: clamp(24px, 2.5vw, 36px);
+  font-size: clamp(24px, 32px, 36px);
   line-height: 1.45;
   letter-spacing: -1px;
   color: #51434a;
@@ -570,33 +505,6 @@ footer {
 #result .actions button:hover {
   filter: brightness(1.06);
   transform: translateY(-2px);
-}
-
-@media (max-width: 650px) {
-  #result .result {
-    width: 100%;
-    grid-template-columns: 1fr;
-    gap: 22px;
-  }
-
-  #result .idol {
-    width: min(290px, 80%);
-    margin: auto;
-  }
-
-  .result-details {
-    padding-top: 0;
-    width: min(380px, 100%);
-    margin: auto;
-  }
-
-  .winner-heading {
-    padding: 25px;
-  }
-
-  .winner-message {
-    padding: 25px;
-  }
 }
 
 /* 원본 피그마 프레임(1440 × 1024)을 화면에 맞게 비례 축소합니다. */
@@ -1103,7 +1011,7 @@ body {
 }
 #home .logo {
   position: static;
-  width: clamp(280px, 30vw, 430px);
+  width: clamp(280px, 384px, 430px);
   height: auto;
   max-height: 24vh;
   object-fit: contain;
@@ -1112,12 +1020,12 @@ body {
   position: static;
   width: auto;
   margin: 14px 0 28px;
-  font-size: clamp(15px, 1.35vw, 20px);
+  font-size: clamp(15px, 17.28px, 20px);
 }
 #home .categories {
   position: static;
   display: flex;
-  width: min(720px, 90vw);
+  width: min(720px, 1152px);
   gap: 22px;
 }
 #home .category {
@@ -1143,7 +1051,7 @@ body {
 }
 #home .controls {
   position: static;
-  width: min(590px, 82vw);
+  width: min(590px, 1049.6px);
   margin: 28px 0 0;
 }
 #home .rounds {
@@ -1164,7 +1072,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 5vh 5vw;
+  padding: 5vh 64px;
 }
 #play > div:first-of-type {
   position: static;
@@ -1173,7 +1081,7 @@ body {
 }
 #play .progress {
   position: static;
-  width: min(500px, 60vw);
+  width: min(500px, 768px);
   height: 32px;
   border-width: 2px;
   margin: 9px 0 28px;
@@ -1217,7 +1125,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6vh 6vw;
+  padding: 6vh 76.8px;
 }
 #result .result {
   position: static;
@@ -1258,10 +1166,10 @@ body {
   border-radius: 14px;
 }
 #result h1 {
-  font-size: clamp(23px, 2.3vw, 35px);
+  font-size: clamp(23px, 29.44px, 35px);
 }
 #result h1 strong {
-  font-size: clamp(27px, 2.7vw, 42px);
+  font-size: clamp(27px, 34.56px, 42px);
 }
 #result .winner-group {
   font-size: 16px;
@@ -1283,7 +1191,7 @@ body {
   font-size: 13px;
 }
 #photo {
-  padding: 30px max(24px, calc((100vw - 1360px) / 2));
+  padding: 30px max(24px, calc((1280px - 1360px) / 2));
 }
 #photo > h2 {
   font-size: 36px;
@@ -1385,99 +1293,7 @@ button,
     opacity: 0;
   }
 }
-@media (max-width: 700px) {
-  #home .logo {
-    width: 300px;
-    max-width: 80vw;
-  }
-  #home .categories {
-    gap: 12px;
-    width: 94%;
-  }
-  #home .category {
-    width: calc(50% - 6px);
-  }
-  #home .category .photo.pair {
-    height: 140px;
-  }
-  #play {
-    padding: 30px 14px;
-  }
-  #play .matches {
-    grid-template-columns: minmax(0, 1fr) 35px minmax(0, 1fr);
-    gap: 8px;
-  }
-  #play .idol {
-    padding: 7px 7px 0;
-  }
-  #play .idol .photo {
-    height: clamp(210px, 37vh, 340px);
-  }
-  #play .vs {
-    font-size: 23px;
-  }
-  #play .card-label {
-    font-size: 19px;
-    padding: 14px 4px;
-  }
-  #play .card-label small {
-    font-size: 10px;
-  }
-  #result {
-    padding: 35px 22px;
-  }
-  #result .result {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    max-width: 390px;
-  }
-  #result .idol {
-    width: 250px;
-    margin: auto;
-  }
-  #result .idol .photo {
-    height: 270px;
-  }
-  .result-details {
-    padding: 0;
-  }
-  .winner-heading {
-    min-height: 0;
-    padding: 23px;
-  }
-  #result h1 {
-    font-size: 25px;
-  }
-  #result h1 strong {
-    font-size: 30px;
-  }
-  .winner-message {
-    padding: 22px;
-  }
-  .booth-layout {
-    grid-template-columns: 1fr;
-  }
-  .booth-settings {
-    gap: 18px;
-  }
-  .camera-panel,
-  .booth-settings {
-    padding: 18px;
-  }
-  #photo > h2 {
-    font-size: 30px;
-  }
-  .chosen-idol {
-    flex-wrap: wrap;
-  }
-  .swatches {
-    gap: 8px;
-  }
-  .swatches i {
-    width: 26px;
-    height: 26px;
-  }
-}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1516,7 +1332,7 @@ button,
   --booth-line: #deb0c8;
   --booth-ink: #74324f;
   background: url("/assets/pink.svg") center / cover;
-  padding: 26px max(25px, calc((100vw - 1320px) / 2)) 35px;
+  padding: 26px max(25px, calc((1280px - 1320px) / 2)) 35px;
   color: var(--booth-ink);
 }
 #stage[data-theme="boy"] #photo {
@@ -1531,7 +1347,7 @@ button,
 }
 #photo > h2 {
   color: #473f45;
-  font-size: clamp(29px, 3vw, 40px);
+  font-size: clamp(29px, 38.4px, 40px);
   margin-top: 0;
 }
 #photo > .intro {
@@ -1697,41 +1513,6 @@ button,
   font-size: 14px;
   padding: 12px 8px;
 }
-@media (max-width: 850px) {
-  #photo .booth-layout {
-    grid-template-columns: 1fr;
-    max-width: 650px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  #photo .camera {
-    height: 360px;
-  }
-  #photo .photo-strip img {
-    height: 110px;
-  }
-}
-@media (max-width: 450px) {
-  #photo .camera-panel,
-  #photo .booth-settings {
-    padding: 15px;
-  }
-  #photo .camera {
-    height: 270px;
-  }
-  #photo .booth-settings {
-    gap: 14px;
-  }
-  .camera-person strong {
-    font-size: 14px;
-  }
-  #photo .settings-body h3 {
-    font-size: 18px;
-  }
-  #photo .chosen-idol {
-    gap: 10px;
-  }
-}
 
 /* 실제 월드컵 상태에 연결된 진행률과 선택 피드백 */
 #play .progress::before {
@@ -1858,12 +1639,6 @@ button,
 #photo .camera-status[role="alert"] {
   color: #9d2448;
 }
-@media (max-width: 450px) {
-  #photo .swatches .frame-swatch {
-    width: 26px;
-    height: 26px;
-  }
-}
 
 .email-form {
   grid-column: 1 / -1;
@@ -1912,14 +1687,14 @@ button,
 
 /* 방명록: 기존 화면은 유지하고 이 화면 안에서만 스타일을 적용합니다. */
 #guestbook {
-  padding: 58px 4.5vw 48px;
+  padding: 58px 57.6px 48px;
   color: var(--guestbook-ink);
   text-align: left;
   position: relative;
 }
 .guestbook-back {
   position: absolute;
-  right: 4.5vw;
+  right: 57.6px;
   top: 25px;
   border: 0;
   background: transparent;
@@ -1934,7 +1709,7 @@ button,
   margin-bottom: 30px;
 }
 .guestbook-title h1 {
-  font-size: clamp(36px, 4vw, 58px);
+  font-size: clamp(36px, 51.2px, 58px);
   margin: 0 0 10px;
   letter-spacing: -2px;
 }
@@ -1955,11 +1730,11 @@ button,
   border: 2px solid #ffb600;
   border-radius: 20px;
   background: #ffffffed;
-  padding: clamp(22px, 2.4vw, 36px);
+  padding: clamp(22px, 30.72px, 36px);
   min-width: 0;
 }
 .guestbook-panel h2 {
-  font-size: clamp(23px, 2.5vw, 32px);
+  font-size: clamp(23px, 32px, 32px);
   margin: 0 0 20px;
   letter-spacing: -1px;
 }
@@ -2192,28 +1967,6 @@ button,
   display: block;
   margin: 18px auto 0;
 }
-@media (max-width: 800px) {
-  .guestbook-layout {
-    grid-template-columns: 1fr;
-  }
-  #guestbook {
-    padding: 70px 20px 30px;
-  }
-  .guestbook-panel {
-    padding: 24px;
-  }
-  .guestbook-empty {
-    min-height: 230px;
-  }
-}
-@media (max-width: 480px) {
-  .guestbook-cards {
-    grid-template-columns: 1fr;
-  }
-  .guestbook-list-heading h2 {
-    font-size: 23px;
-  }
-}
 
 /* 선택한 카드에 테마색 테두리와 바깥 링을 표시합니다. */
 #home .category {
@@ -2253,16 +2006,7 @@ button,
 #home .category.selected .card-label {
   box-shadow: inset 0 3px 0 var(--selection-color);
 }
-@media (max-width: 800px) {
-  #home .category:hover,
-  #home .category.selected,
-  #home .category.selected:hover {
-    box-shadow:
-      0 0 0 2px #fff,
-      0 0 0 5px var(--selection-color),
-      0 6px 16px var(--selection-shadow);
-  }
-}
+
 @media (prefers-reduced-motion: reduce) {
   #home .category {
     transition: none;
@@ -2619,50 +2363,6 @@ button,
   background: #fff0cf;
   font-size: 13px;
 }
-@media (max-width: 700px) {
-  .sticker-editor-backdrop {
-    padding: 8px;
-  }
-  .sticker-editor {
-    height: 96dvh;
-  }
-  .sticker-editor-heading {
-    padding: 12px;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .sticker-editor-heading > div {
-    flex-basis: 100%;
-  }
-  .sticker-editor-heading h2 {
-    font-size: 20px;
-  }
-  .sticker-clock {
-    margin-left: 0;
-    font-size: 20px;
-    padding: 6px 12px;
-  }
-  .sticker-finish {
-    margin-left: auto;
-  }
-  .sticker-editor-body {
-    grid-template-columns: minmax(0, 1fr) 155px;
-  }
-  .sticker-canvas-scroll {
-    padding: 10px;
-  }
-  .sticker-tools {
-    padding: 10px;
-  }
-  .sticker-palette {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 5px;
-  }
-  .sticker-palette button {
-    height: 54px;
-    padding: 4px;
-  }
-}
 
 #photo .photo-filters {
   display: grid;
@@ -2732,11 +2432,6 @@ button,
 }
 #photo .booth-actions button {
   min-height: 46px;
-}
-@media (max-width: 850px) {
-  #photo .camera-panel .camera-status {
-    min-height: 0;
-  }
 }
 
 /* 본문과 푸터가 하나의 도트 배경을 공유합니다. */
@@ -2964,15 +2659,6 @@ button,
 #stage[data-screen] .site-footer {
   color: var(--accent);
 }
-@media (max-width: 700px) {
-  #play .idol,
-  #play .idol:last-child {
-    padding: 7px 7px 0;
-  }
-  #play .card-label {
-    padding: 14px 4px;
-  }
-}
 
 /* 가로 화면에서도 사진을 세로 카드에 가깝게 유지합니다. */
 #play .matches {
@@ -2982,15 +2668,6 @@ button,
 }
 #play .idol .photo {
   height: clamp(280px, 50vh, 470px);
-}
-@media (max-width: 700px) {
-  #play .matches {
-    grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr);
-    gap: 8px;
-  }
-  #play .idol .photo {
-    height: clamp(210px, 37vh, 340px);
-  }
 }
 
 /* 포토부스: 강한 색은 주요 동작·선택에, 보조색은 안내와 경계에 사용합니다. */
@@ -3060,4 +2737,40 @@ button,
 
 #stage[data-screen="guestbook"] .site-footer {
   color: var(--guestbook-ink);
+}
+
+/* 화면 크기와 관계없이 1280px PC 배치를 가운데 유지합니다. */
+html,
+body {
+  min-width: 1280px;
+  overflow-x: auto;
+}
+#root {
+  width: 1280px;
+  min-width: 1280px;
+  max-width: 1280px;
+  margin-inline: auto;
+}
+#stage {
+  width: 1280px;
+  min-width: 1280px;
+  max-width: 1280px;
+}
+#photo > h2,
+#photo > .intro {
+  white-space: nowrap;
+}
+
+/* 고정폭 웹폰트 버튼은 자간과 굵기를 명시해 브라우저 차이를 줄입니다. */
+#home .controls button,
+#home .guestbook-home-link {
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: 0;
+  word-spacing: 0;
+  white-space: nowrap;
+  text-align: center;
+  text-indent: 0;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
