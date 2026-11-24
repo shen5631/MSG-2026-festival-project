@@ -157,7 +157,7 @@ export async function createPhotoStrip(
   });
   context.font = "28px sans-serif";
   context.fillText(
-    "2026 청아즐 - 미림마이스터고 MSG",
+    "2026 동아리 발표회 - MSG",
     640,
     canvas.height - 36,
     1160,

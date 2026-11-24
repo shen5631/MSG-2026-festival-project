@@ -2739,22 +2739,22 @@ button,
   color: var(--guestbook-ink);
 }
 
-/* 화면 크기와 관계없이 1280px PC 배치를 가운데 유지합니다. */
+/* 배경은 화면을 채우고, 본문은 1280px PC 배치를 가운데 유지합니다. */
 html,
 body {
   min-width: 1280px;
   overflow-x: auto;
 }
-#root {
+#root,
+#stage {
+  width: 100%;
+  min-width: 1280px;
+}
+.design-canvas {
   width: 1280px;
   min-width: 1280px;
   max-width: 1280px;
   margin-inline: auto;
-}
-#stage {
-  width: 1280px;
-  min-width: 1280px;
-  max-width: 1280px;
 }
 #photo > h2,
 #photo > .intro {
